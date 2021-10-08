@@ -83,7 +83,7 @@ export const EmailLoginForm = (props) => {
           or login with email
 			</FormLabel>
 
-      {error && <Alert status="error"><AlertIcon />{error}</Alert>}
+      {error && <Alert status="error" marginBottom="3"><AlertIcon />{error}</Alert>}
 
         <Input
           id='email'
