@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server/server.js",
     "dev": "concurrently \"cross-env NODE_ENV=development webpack-dev-server --history-api-fallback \" \"nodemon ./server/server.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "NODE_ENV=production webpack --watch"
   },
   "repository": {

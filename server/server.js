@@ -14,7 +14,6 @@ const friendsPageRouter = require('./routes/friendsPageRouter');
 const dailyRouter = require('./routes/dailyRouter');
 
 require('dotenv').config();
-console.log('dot env:', process.env.PGHOST);
 
 cron.schedule('59 59 23 * * *', () => {
   app.use('/daily', dailyRouter);
