@@ -6,7 +6,7 @@ const router = express.Router();
 // verify user email and password, create session cookie and store   
 router.post('/', userController.verifyUser, cookieController.createSession, (req, res) => {
   if (res.locals.registrationStatus === false) {
-    return res.status(404).send('User not found');
+    return res.status(401).send('Invalid credentials');
   }
   return res.status(200).send({token: res.locals.token});
 });
