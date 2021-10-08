@@ -4,7 +4,6 @@ import AddHabitsButton from "./AddHabitsButton";
 import StatsButton from "./StatsButton";
 import SettingsButton from "./SettingsButton";
 
-
 export const ActionsCard = (props) => (
 	<Box
 		bg={useColorModeValue("white", "gray.700")}
