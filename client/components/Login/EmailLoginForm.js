@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { Button, FormControl, FormLabel, Input, Alert, AlertIcon } from "@chakra-ui/react";
 import { chakra, useColorModeValue } from "@chakra-ui/system";
 import React, { useState } from 'react';
 import { useHistory } from "react-router";
@@ -44,7 +44,7 @@ export const EmailLoginForm = (props) => {
 
     axios.post('/api/login', payload, {withCredentials: true})
       .then((res) => {
-        if (res.status === 200) {
+
           console.log('this is the data received from server:    ', res.data)
           setIsLoading(false);
           setState(prevState => ({
@@ -56,31 +56,22 @@ export const EmailLoginForm = (props) => {
             pathname: '/habits',
             state: {token: res.data}
         })
-        }
-        else if (res.status === 204) {
-          setError('Invalid email or password');
-          setIsLoading(false);
-          res.send('Email and password do not match')
-        }
-        else {
-          setError('Invalid email or password');
-          setIsLoading(false);
-          res.status(404).send('Email does not exist')
-        }
     })
     .catch(error => {
       setIsLoading(false)
-      setError('Invalid email or password');
-      console.log(error)
+
+      if (error.response.status === 401) {
+        setError('Invalid email or password');
+      }
+
+      console.log('ERRRRRR', error.response)
     });
   }
   
 
   return (
-
+    
     <chakra.form width="full" {...props}>
- 
-      {/* {error && <ErrorMessage message={error}/>} */}
       <FormControl isRequired>
         <FormLabel
           fontWeight="medium"
@@ -91,6 +82,9 @@ export const EmailLoginForm = (props) => {
         >
           or login with email
 			</FormLabel>
+
+      {error && <Alert status="error" marginBottom="3"><AlertIcon />{error}</Alert>}
+
         <Input
           id='email'
           type="email"
