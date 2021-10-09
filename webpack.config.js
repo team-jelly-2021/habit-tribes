@@ -1,20 +1,21 @@
-const path = require('path');
 const webpack = require('webpack')
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+require('regenerator-runtime/runtime')
 require('dotenv').config();
 
 module.exports = {
 	mode: 'development',
-	entry: './src/index.js',
+	entry: ["regenerator-runtime/runtime.js", './src/index.js'],
 
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: 'bundle.js',
 		publicPath: '/',
 	},
-
+  devtool: 'source-map',
 	devServer: {
 		// Serve index.html as the base
 		static: path.resolve(__dirname, 'public'),
@@ -57,7 +58,10 @@ module.exports = {
 	},
 
 	plugins: [new HtmlWebpackPlugin({
-		title: "Scratch Project",
-		template: "./public/index.html"
-	  }), new Dotenv(), new MiniCssExtractPlugin()],
+			title: "Scratch Project",
+			template: "./public/index.html"
+	  }), 
+		new Dotenv(), 
+		new MiniCssExtractPlugin(), 
+	],
 };

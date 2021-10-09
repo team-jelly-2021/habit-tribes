@@ -3,7 +3,7 @@ import React from "react";
 import { FaRegSun } from "react-icons/fa";
 
 export const SettingsButton = (props) => (
-	<IconButton aria-label="Habit" icon={<FaRegSun />} />
+	<IconButton aria-label="Habit" icon={<FaRegSun />} {...props}/>
 );
 
 export default SettingsButton;

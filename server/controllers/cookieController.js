@@ -28,6 +28,7 @@ cookieController.verifyToken = async (req, res, next) => {
     console.log(token)
     const verification = await jwt.verify(token, 'process.env.SECRET_SALT');
     if (verification) {
+      console.log(verification)
       res.locals.tokenVerification = true;
       res.locals.email = verification.email;
       console.log(res.locals.email)

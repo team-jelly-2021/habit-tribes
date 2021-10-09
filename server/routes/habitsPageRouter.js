@@ -6,20 +6,25 @@ const helperController = require('../controllers/helperController');
 // const videoController = require('../controllers/videoController.js');
 
 
-router.get('/', cookieController.verifyToken, userController.getMyHabits, userController.myTodayGoals, userController.checkProgress, (req, res, next) => {
-  // first invoke controller to retrieve list of all habits at current date for current user
-  // return list
-  console.log('in get /habits');
-  const user=res.locals.user;
-  const myHabits=res.locals.myHabits;
-  return res.status(200).json(myHabits);
+router.get('/', 
+/* cookieController.verifyToken,  userController.getMyHabits, userController.myTodayGoals, userController.checkProgress, */ 
+  userController.getHabits,
+  (req, res, next) => {
+    // first invoke controller to retrieve list of all habits at current date for current user
+    // return list
+    return res.status(200).json(res.locals.rows);
 });
   
-router.post('/addHabit', helperController.getToday, userController.addHabit, userController.getMyHabits, userController.myTodayGoals, (req, res, next) => {
+// TODO: Explain change from /addHabit to / to the team
+router.post('/', userController.addHabit, (req, res, next) => {
   // first invoke controller to write to DB info for new habit
   // return updated list of today's goals
-  return res.status(200).json(res.locals.todayGoals);
+  return res.status(201).json(res.locals.habit)
 });
+
+router.delete('/:habitId', userController.deleteHabit, (req, res, next) => {
+  return res.status(203).json(res.locals.habit)
+})
 
 router.put('/completed/:id', userController.setOneHabitStatus, (req, res, next) => {
   return res.status(200).send(res.locals.habitStatus);

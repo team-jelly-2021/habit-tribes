@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { getDate } = require('../utils/getDate')
 const db = require('../models/usersDatabaseModels.js');
 
 
@@ -92,55 +93,90 @@ userController.deleteAccount = async (req, res, next) => {}; //stretch
 
 
 userController.addHabit = async (req, res, next) => {
-  const { habits_id } = req.body;
-  const today = req.body.start_day || res.locals.today;
-  const frequency = req.body.habit_frequency || 1;
-  const email = res.locals.email || 'test@gmail.com';
+  const createdAt = getDate();
+  res.locals.user = 1 // temp variable until auth provides user_id
+  try {
+    const { rows: [ habit ]} = await db.query('INSERT INTO habit (name, user_id, createdAt) VALUES ($1, $2, $3) RETURNING *', [req.body.name, res.locals.user, createdAt]);
+    res.locals.habit = habit
+  } catch(e) {
+    next(e)
+  }
+  next()
+}
 
-  const getHabitQuery = 'SELECT name FROM habits WHERE name = $1' 
-  try { // check habits table for habits_id
-    const habitNameAttempt = await db.query(getHabitQuery, [habits_id]);
-    const habitExists = habitNameAttempt.rows[0] ? true : false; 
-    if (!habitExists) {
-      const setHabitQuery = 'INSERT INTO habits (name) VALUES ($1)';
-      try {
-        await db.query(setHabitQuery, [habits_id]);
-      } catch (setQueryError) {
-        return next({'err': setQueryError, message: 'setHabit query failed in userController.addHabit'})
-      }
-    }
-  } catch (getQueryError) {
-    return next({'err': getQueryError, message: 'getHabit query failed in userController.addHabit'})
-  }   
-  const userHabitJoinQuery = 'INSERT INTO users_habits_join (users_id, habits_id, habits_start_day, habit_frequency) VALUES ($1, $2, $3, $4)'; 
-  let userHabitJoinEntry; //will store the result of db query that adds to users_habits_join
-  try {       
-    await db.query(userHabitJoinQuery, [email, habits_id, today, frequency]); //for testing. in launch, use line below.
-    // userHabitJoinEntry = await db.query(userHabitJoinQuery, [res.locals.email, habits_id, today, frequency]);      
+userController.getHabits = async (req, res, next) => {
+  const userId = 1
+  try {
+    const { rows } = await db.query('SELECT * FROM habit WHERE user_id = $1', [userId])
+    res.locals.rows = rows
+  } catch(e) {
+    next(e)
   }
-  catch (setUserHabitJoinError) {
-      return next({'err': setUserHabitJoinError, message: 'getHabit query failed in userController.addHabit'})
+  next()
+}
+
+userController.deleteHabit = async (req, res, next) => {
+  console.log('params', req.params)
+  if (!req.params.habitId) return next()
+  try {
+    const { rows } = await db.query('DELETE FROM habit WHERE id = $1 RETURNING *', [req.params.habitId])
+    console.log(rows)
+    res.locals.habit = rows[0]
+  } catch(e) {
+    next(e)
   }
-  const getMyHabitsQuery = `SELECT * FROM users_habits_join WHERE users_id = $1`;
-  try { // THIS IS MESSY. COPIED FROM getMyHabits. REFACTOR
-    userHabitJoinEntry = await db.query(getMyHabitsQuery, [email]);
-  } catch (err) {
-    return next({'err': err, message: 'query failed in userController.getMyHabits'});
-  }
-  const userHabitCalendarQuery = 'INSERT INTO user_habit_calendar (days_since_launch, user_habits_join_id) VALUES ($1, $2)'
-  // populate the calendar with events
-  try { // ###### NOT SURE why this only runs once. ######################
-    for (let i = today; i < 10000 + today; i+= frequency) { // 10000 is an arbitrary large number
-      console.log(i);
-      console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-      // save to calendar the days on which the event will occur with id from user_habits_join entry
-       db.query(userHabitCalendarQuery, [i, userHabitJoinEntry.rows[userHabitJoinEntry.rows.length-1]._id]);
-    }
-  } catch (err) {
-    return next({err, message: `userHabitCalendarQuery failed in userController.addHabit`})
-  }
-  return next();
-};
+  next()
+}
+// userController.addHabit = async (req, res, next) => {
+//   const { habits_id } = req.body;
+//   const today = req.body.start_day || res.locals.today;
+//   const frequency = req.body.habit_frequency || 1;
+//   const email = res.locals.email || 'test@gmail.com';
+
+//   const getHabitQuery = 'SELECT name FROM habits WHERE name = $1' 
+//   try { // check habits table for habits_id
+//     const habitNameAttempt = await db.query(getHabitQuery, [habits_id]);
+//     const habitExists = habitNameAttempt.rows[0] ? true : false; 
+//     if (!habitExists) {
+//       const setHabitQuery = 'INSERT INTO habits (name) VALUES ($1)';
+//       try {
+//         await db.query(setHabitQuery, [habits_id]);
+//       } catch (setQueryError) {
+//         return next({'err': setQueryError, message: 'setHabit query failed in userController.addHabit'})
+//       }
+//     }
+//   } catch (getQueryError) {
+//     return next({'err': getQueryError, message: 'getHabit query failed in userController.addHabit'})
+//   }   
+//   const userHabitJoinQuery = 'INSERT INTO users_habits_join (users_id, habits_id, habits_start_day, habit_frequency) VALUES ($1, $2, $3, $4)'; 
+//   let userHabitJoinEntry; //will store the result of db query that adds to users_habits_join
+//   try {       
+//     await db.query(userHabitJoinQuery, [email, habits_id, today, frequency]); //for testing. in launch, use line below.
+//     // userHabitJoinEntry = await db.query(userHabitJoinQuery, [res.locals.email, habits_id, today, frequency]);      
+//   }
+//   catch (setUserHabitJoinError) {
+//       return next({'err': setUserHabitJoinError, message: 'getHabit query failed in userController.addHabit'})
+//   }
+//   const getMyHabitsQuery = `SELECT * FROM users_habits_join WHERE users_id = $1`;
+//   try { // THIS IS MESSY. COPIED FROM getMyHabits. REFACTOR
+//     userHabitJoinEntry = await db.query(getMyHabitsQuery, [email]);
+//   } catch (err) {
+//     return next({'err': err, message: 'query failed in userController.getMyHabits'});
+//   }
+//   const userHabitCalendarQuery = 'INSERT INTO user_habit_calendar (days_since_launch, user_habits_join_id) VALUES ($1, $2)'
+//   // populate the calendar with events
+//   try { // ###### NOT SURE why this only runs once. ######################
+//     for (let i = today; i < 10000 + today; i+= frequency) { // 10000 is an arbitrary large number
+//       console.log(i);
+//       console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+//       // save to calendar the days on which the event will occur with id from user_habits_join entry
+//        db.query(userHabitCalendarQuery, [i, userHabitJoinEntry.rows[userHabitJoinEntry.rows.length-1]._id]);
+//     }
+//   } catch (err) {
+//     return next({err, message: `userHabitCalendarQuery failed in userController.addHabit`})
+//   }
+//   return next();
+// };
 
 userController.getAllUsers = async(req, res, next) => {
   const getAllUsersQuery = 'SELECT name FROM users'; 
