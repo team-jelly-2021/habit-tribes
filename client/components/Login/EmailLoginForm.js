@@ -71,7 +71,7 @@ export const EmailLoginForm = (props) => {
 
   return (
     
-    <chakra.form width="full" {...props}>
+    <chakra.form width="full" {...props} onSubmit={handleSubmitClick}>
       <FormControl isRequired>
         <FormLabel
           fontWeight="medium"
@@ -94,6 +94,7 @@ export const EmailLoginForm = (props) => {
           }}
           onChange={handleChange}
           value={state.email}
+          required="true"
         />
         <Input
           id='password'
@@ -105,6 +106,7 @@ export const EmailLoginForm = (props) => {
           }}
           onChange={handleChange}
           value={state.password}
+          required="true"
         />
         
       </FormControl>
@@ -114,7 +116,7 @@ export const EmailLoginForm = (props) => {
         fontSize="sm"
         fontWeight="bold"
         colorScheme="gray"
-        onClick={handleSubmitClick}
+        type="submit"
       >
         Login
 		</Button>

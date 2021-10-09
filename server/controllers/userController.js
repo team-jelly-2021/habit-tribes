@@ -39,7 +39,7 @@ userController.createUser = async (req, res, next) => {
     return next();
   }
   catch (error) {
-    return res.redirect('/login');
+    return res.status(400).send('Invalid input');
   }
 };
 
