@@ -35,12 +35,15 @@ app.use('/api/login', loginRouter);
 app.use('/api/register', registerRouter);
 app.use('/api/habits', habitsPageRouter);
 app.use('/api/friends', friendsPageRouter);
+app.use((req, res) => {
+  res.status(404).send('File not found');
+});
 // app.use('/video', videoRouter);
 
 
 app.use((err, req, res, next) => {
   console.log(err);
-  res.status(404).send('Internal Server Error');
+  res.status(500).send('Internal Server Error');
 });
 
 
