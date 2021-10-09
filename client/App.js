@@ -34,6 +34,9 @@ const App = () => {
 				<Route path="/video" exact>
 					<Video />
 				</Route>
+				<Route path="/*">
+					<div>404 not found</div>
+				</Route>
 				
 			</Switch>
 		</ChakraProvider>
