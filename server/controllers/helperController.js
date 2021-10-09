@@ -6,6 +6,7 @@ const helperController = {};
 
 helperController.getToday = async (req, res, next) => {
   try {
+    // TODO: Why query the database rather than Date.now() ?
     const today = await db.query('SELECT today FROM today');
     res.locals.today = today.rows[0]['today'];
     return next();

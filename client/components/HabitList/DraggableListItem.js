@@ -2,7 +2,7 @@ import * as React from "react";
 import { MotionListItem } from "./MotionListItem";
 
 export const DraggableListItem = (props) => {
-	const { index, measurePosition, onPositionUpdate, ...rest } = props;
+	const { index, measurePosition, onPositionUpdate, children, ...rest } = props;
 	const ref = React.useRef(null);
 	const [isDragging, setIsDragging] = React.useState(false);
 	React.useEffect(() => {
@@ -45,6 +45,6 @@ export const DraggableListItem = (props) => {
 			cursor="pointer"
 			userSelect="none"
 			{...rest}
-		/>
+		>{children}</MotionListItem>
 	);
 };

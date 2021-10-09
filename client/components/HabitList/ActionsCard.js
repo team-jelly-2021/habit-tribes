@@ -4,10 +4,10 @@ import AddHabitsButton from "./AddHabitsButton";
 import StatsButton from "./StatsButton";
 import SettingsButton from "./SettingsButton";
 
-export const ActionsCard = (props) => (
+export const ActionsCard = ({ onOpenAddHabits = () => {}, ...props }) => (
 	<Box
 		bg={useColorModeValue("white", "gray.700")}
-		shadow="base"
+		shadow="none"
 		rounded="lg"
 		p={{
 			base: "4",
@@ -16,9 +16,9 @@ export const ActionsCard = (props) => (
 		{...props}
 	>
 		<Center>
-			<SettingsButton />
-			<AddHabitsButton />
-			<StatsButton />
+			<SettingsButton mx={2} size="lg" />
+			<AddHabitsButton onClick={onOpenAddHabits} mx={2} size="lg" />
+			<StatsButton mx={2} size="lg" />
 		</Center>
 	</Box>
 );
