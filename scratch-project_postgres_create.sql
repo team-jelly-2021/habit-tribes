@@ -20,6 +20,19 @@ CREATE TABLE public.habits (
   OIDS=FALSE
 );
 
+DROP TABLE IF EXISTS "public"."habit";
+CREATE SEQUENCE IF NOT EXISTS habit_id_seq;
+CREATE TABLE "public"."habit" (
+    "id" int4 NOT NULL DEFAULT nextval('habit_id_seq'::regclass),
+    "name" varchar NOT NULL,
+    "user_id" int4 NOT NULL,
+    "createdat" date NOT NULL,
+    "frequency" varchar,
+    "reminder" int4,
+    "private" bool NOT NULL DEFAULT false,
+    PRIMARY KEY ("id")
+);
+
 
 
 CREATE TABLE public.users_habits_join (
