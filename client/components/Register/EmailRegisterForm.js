@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { Button, FormControl, FormLabel, Input, Alert, AlertIcon } from "@chakra-ui/react";
 import { chakra, useColorModeValue } from "@chakra-ui/system";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
@@ -17,6 +17,8 @@ export const EmailRegisterForm = (props) => {
     confirmPassword: '',
     success: null,
   })
+
+	const [error, setError] = useState('');
 
 	  // typing change handler
 		const handleChange = (e) => {
@@ -38,6 +40,11 @@ export const EmailRegisterForm = (props) => {
 		// handle click on registration
 		const handleSubmitClick = (e) => {
 			e.preventDefault();
+
+			if (state.password != state.confirmPassword) {
+				setError('Passwords do not match');
+			}
+
 			if (state.password === state.confirmPassword && state.name && state.email) {
 				const payload = {
 					"name": state.name,
@@ -48,29 +55,22 @@ export const EmailRegisterForm = (props) => {
 	
 				axios.post('/api/register', payload, {withCredentials: true})
 				.then(res => {
-					if (res.status === 200) {
 						setState(prevState => ({
 							...prevState,
 							'success' : 'Registration successful, redirecting to homepage...'
 						}));
 						// push to homepage
 						history.push('/habits')
-					} else {
-						console.log('I like turtles.')
-					}
 				})
 				.catch(error => {
 					console.log(error)
+					setError('Failed to create new account.')
 				});
 			} 
-			
-			else {
-				res.send('Please enter valid name, email & password');
-			}
 		}
 
 	return (
-		<chakra.form width="full" {...props}>
+		<chakra.form width="full" {...props} onSubmit={handleSubmitClick}>
 			<FormControl>
 				<FormLabel
 					fontWeight="medium"
@@ -81,6 +81,9 @@ export const EmailRegisterForm = (props) => {
 				>
 					or sign up below
 				</FormLabel>
+
+				{error && <Alert status="error" marginBottom="3"><AlertIcon />{error}</Alert>}
+
 				<Input
 					id='name'
 					type="name"
@@ -90,6 +93,7 @@ export const EmailRegisterForm = (props) => {
 					}}
 					onChange={handleChange}
           value={state.name}
+					required="true"
 				/>
 				<Input
 					mt={2}
@@ -101,6 +105,7 @@ export const EmailRegisterForm = (props) => {
 					}}
 					onChange={handleChange}
           value={state.email}
+					required="true"
 				/>
 				<Input
 					mt={2}
@@ -112,6 +117,7 @@ export const EmailRegisterForm = (props) => {
 					}}
 					onChange={handleChange}
           value={state.password}
+					required="true"
 				/>
 				<Input
 					mt={2}
@@ -123,6 +129,7 @@ export const EmailRegisterForm = (props) => {
 					}}
 					onChange={handleChange}
           value={state.confirmPassword}
+					required="true"
 				/>
 				<Input
 					mt={2}
@@ -134,6 +141,7 @@ export const EmailRegisterForm = (props) => {
 					}}
 					onChange={handleChange}
           value={state.phoneNumber}
+					required="true"
 				/>
 			</FormControl>
 			<Button
@@ -142,7 +150,7 @@ export const EmailRegisterForm = (props) => {
 				fontSize="sm"
 				fontWeight="bold"
 				colorScheme="gray"
-				onClick={handleSubmitClick}
+				type="submit"
 			>
 				Sign up
 			</Button>
