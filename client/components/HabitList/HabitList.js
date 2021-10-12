@@ -11,7 +11,7 @@ export const HabitList = () => {
 	const [habits, setHabits] = React.useState([]);
 	const { items, handlePositionUpdate, measurePosition } = useDraggableList(habits);
 	const { isOpen, onOpen, onClose } = useDisclosure()
-console.log(process.env.PGHOST, 'ENV PG HOSTT <<<<')
+
 	React.useEffect(() => {
 		axios.get("/api/habits")
 			.then(({ data }) => {
