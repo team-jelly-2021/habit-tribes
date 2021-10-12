@@ -9,17 +9,24 @@ import {
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { SunIcon } from "@chakra-ui/icons";
+import { useAuth0 } from "@auth0/auth0-react";
+
+
 
 const HomePage = () => {
 	const { toggleColorMode } = useColorMode();
 	const formBackground = useColorModeValue("gray.100");
+	const { loginWithRedirect } = useAuth0();
 
 	// delete this when auth is completed and redirects to the appropiate route
 	// I just created this so that we can easily get to the habit dashboard until auth is done
 	const history = useHistory();
-	const loginRedirect = () => {
-		history.push("/login");
-	};
+	// const loginRedirect = () => {
+
+	// 	history.push("/login");
+	// };
+
+	
 
 	return (
 		<Flex
@@ -43,7 +50,7 @@ const HomePage = () => {
 						bg: "gray.800",
 						transform: "scale(0.95)",
 					}}
-					onClick={loginRedirect}
+					onClick={loginWithRedirect}
 				>
 					Login
 				</Button>
