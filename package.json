@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/red-lipped-batfish04/scratch-project#readme",
   "dependencies": {
-    "@auth0/auth0-react": "^1.8.0",
     "@babel/runtime": "^7.15.4",
     "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.8",

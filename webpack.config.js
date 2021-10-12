@@ -2,7 +2,6 @@ const webpack = require('webpack')
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 require('regenerator-runtime/runtime')
 require('dotenv').config();
