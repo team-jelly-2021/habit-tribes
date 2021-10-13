@@ -1,76 +1,47 @@
 import { Button, FormControl, FormLabel, Input, Alert, AlertIcon } from "@chakra-ui/react";
 import { chakra, useColorModeValue } from "@chakra-ui/system";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useHistory } from "react-router";
-import axios from "axios";
+import { useAuth } from '../../../lib/AuthContext'
 
 export const EmailRegisterForm = (props) => {
-	function PasswordInput() {
-		const [show, setShow] = useState(false);
-		const handleClick = () => setShow(!show);
-	}
+	const fullNameRef = useRef();
+	const emailRef = useRef();
+	const passwordRef = useRef();
+	const passwordConfirmRef = useRef();
+	const phoneRef = useRef();
+	const { signup } = useAuth();
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
+	const history = useHistory();
 
-	const [state, setState] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    success: null,
-  })
 
-	const [error, setError] = useState('');
-
-	  // typing change handler
-		const handleChange = (e) => {
-			const { id, value } = e.target;
-			setState(prevState => ({
-				...prevState,
-				[id] : value,
-			}));
-		};
-	
-		// history push pages
-		const history = useHistory();
-	
 		// redirect to login page if already have an account
 		const redirectToLogin = () => {
 			history.push('/login')
 		}
 	
-		// handle click on registration
-		const handleSubmitClick = (e) => {
-			e.preventDefault();
+	async function handleSubmit(e) {
+		e.preventDefault();
 
-			if (state.password != state.confirmPassword) {
-				setError('Passwords do not match');
-			}
-
-			if (state.password === state.confirmPassword && state.name && state.email) {
-				const payload = {
-					"name": state.name,
-					"email": state.email,
-					"password": state.password,
-					"phoneNumber": state.phoneNumber,
-				};
-	
-				axios.post('/api/register', payload, {withCredentials: true})
-				.then(res => {
-						setState(prevState => ({
-							...prevState,
-							'success' : 'Registration successful, redirecting to homepage...'
-						}));
-						// push to homepage
-						history.push('/habits')
-				})
-				.catch(error => {
-					console.log(error)
-					setError('Failed to create new account.')
-				});
-			} 
+		if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+			return setError("Passwords do not match");
 		}
 
+		try {
+			setError("");
+			setLoading(true);
+			await signup(emailRef.current.value, passwordRef.current.value);
+			history.push("/");
+		} catch {
+			setError(`Failed to login`);
+		}
+
+		setLoading(false);
+	}
+
 	return (
-		<chakra.form width="full" {...props} onSubmit={handleSubmitClick}>
+		<chakra.form width="full" {...props} onSubmit={handleSubmit}>
 			<FormControl>
 				<FormLabel
 					fontWeight="medium"
@@ -91,8 +62,7 @@ export const EmailRegisterForm = (props) => {
 					_placeholder={{
 						color: useColorModeValue("gray.600", "gray.400"),
 					}}
-					onChange={handleChange}
-          value={state.name}
+					ref={fullNameRef}
 					required="true"
 				/>
 				<Input
@@ -103,9 +73,8 @@ export const EmailRegisterForm = (props) => {
 					_placeholder={{
 						color: useColorModeValue("gray.600", "gray.400"),
 					}}
-					onChange={handleChange}
-          value={state.email}
-					required="true"
+          ref={emailRef}
+					required
 				/>
 				<Input
 					mt={2}
@@ -115,9 +84,8 @@ export const EmailRegisterForm = (props) => {
 					_placeholder={{
 						color: useColorModeValue("gray.600", "gray.400"),
 					}}
-					onChange={handleChange}
-          value={state.password}
-					required="true"
+	        ref={passwordRef}
+					required
 				/>
 				<Input
 					mt={2}
@@ -127,9 +95,8 @@ export const EmailRegisterForm = (props) => {
 					_placeholder={{
 						color: useColorModeValue("gray.600", "gray.400"),
 					}}
-					onChange={handleChange}
-          value={state.confirmPassword}
-					required="true"
+          ref={passwordConfirmRef}
+					required
 				/>
 				<Input
 					mt={2}
@@ -139,12 +106,12 @@ export const EmailRegisterForm = (props) => {
 					_placeholder={{
 						color: useColorModeValue("gray.600", "gray.400"),
 					}}
-					onChange={handleChange}
-          value={state.phoneNumber}
-					required="true"
+					ref={phoneRef}
+					required
 				/>
 			</FormControl>
 			<Button
+				disabled={loading}
 				mt="3"
 				isFullWidth
 				fontSize="sm"

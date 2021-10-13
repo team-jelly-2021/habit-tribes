@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
 	Box,
 	Heading,
@@ -12,69 +12,44 @@ import { Card } from "../Register/Card";
 import { EmailRegisterForm } from "../Register/EmailRegisterForm";
 import { GoogleRegisterButton } from "../Register/GoogleRegisterButton";
 import { useHistory } from "react-router-dom";
-import axios from 'axios';
+import { useAuth } from '../../../lib/AuthContext';
 
 const Register = (props) => {
-
-  // declare initial state
-  const [state, setState] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    success: null,
-  })
-    
-  // typing change handler
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setState(prevState => ({
-      ...prevState,
-      [id] : value,
-    }));
-  };
-
-  // history push pages
   const history = useHistory();
-
-  // redirect to login page if already have an account
+  const emailRef = useRef();
+	const passwordRef = useRef();
+	const passwordConfirmRef = useRef();
+	const { signup } = useAuth();
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
+	
+	
+	
+	// redirect to login page if already have an account
   const redirectToLogin = () => {
     history.push('/login')
   }
 
   // handle click on registration
-  const handleSubmitClick = (e) => {
-    e.preventDefault();
-    if (state.password === state.confirmPassword && state.name && state.email) {
-      const payload = {
-        "name": state.name,
-        "email": state.email,
-        "password": state.password,
-        "phoneNumber": state.phoneNumber,
-      };
+  async function handleSubmit(e) {
+		e.preventDefault();
 
-      axios.post('/api/register', payload)
-      .then(res => {
-        if (res.status === 200) {
-          setState(prevState => ({
-            ...prevState,
-            'success' : 'Registration successful, redirecting to homepage...'
-          }));
-          // push to homepage
-          history.push('/habits')
-        } else {
-          console.log('I like turtles.')
-        }
-      })
-      .catch(error => {
-        console.log(error)
-      });
-    } 
-    
-    else {
-      res.send('Please enter valid name, email & password');
-    }
-  }
+		if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+			return setError("Passwords do not match");
+		}
+
+		try {
+			setError("");
+			setLoading(true);
+			await signup(emailRef.current.value, passwordRef.current.value);
+			history.push("/");
+		} catch {
+			setError("Failed to create an account");
+		}
+
+		setLoading(false);
+	}
+
 
   return (
 		<>
@@ -104,6 +79,7 @@ const Register = (props) => {
 						<LightMode>
 							<GoogleRegisterButton />
 						</LightMode>
+						
 						<EmailRegisterForm onSubmit={(e) => e.preventDefault()} />
 
 						<Box fontSize="sm">
