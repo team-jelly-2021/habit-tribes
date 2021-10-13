@@ -11,46 +11,13 @@ import {
 import { Card } from "../Register/Card";
 import { EmailRegisterForm } from "../Register/EmailRegisterForm";
 import { GoogleRegisterButton } from "../Register/GoogleRegisterButton";
-import { useHistory } from "react-router-dom";
-import { useAuth } from '../../../lib/AuthContext';
+
 
 const Register = (props) => {
-  const history = useHistory();
-  const emailRef = useRef();
-	const passwordRef = useRef();
-	const passwordConfirmRef = useRef();
-	const { signup } = useAuth();
-	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
-	
-	
-	
 	// redirect to login page if already have an account
-  const redirectToLogin = () => {
-    history.push('/login')
-  }
-
-  // handle click on registration
-  async function handleSubmit(e) {
-		e.preventDefault();
-
-		if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-			return setError("Passwords do not match");
-		}
-
-		try {
-			setError("");
-			setLoading(true);
-			await signup(emailRef.current.value, passwordRef.current.value);
-			history.push("/");
-		} catch {
-			setError("Failed to create an account");
-		}
-
-		setLoading(false);
-	}
-
-
+  // const redirectToLogin = () => {
+  //   history.push('/login')
+  // }
   return (
 		<>
 			{/*/  start new styled components here for registration page */}
@@ -79,7 +46,7 @@ const Register = (props) => {
 						<LightMode>
 							<GoogleRegisterButton />
 						</LightMode>
-						
+
 						<EmailRegisterForm onSubmit={(e) => e.preventDefault()} />
 
 						<Box fontSize="sm">

@@ -32,7 +32,7 @@ export const EmailRegisterForm = (props) => {
 			setError("");
 			setLoading(true);
 			await signup(emailRef.current.value, passwordRef.current.value);
-			history.push("/");
+			history.push("/habits");
 		} catch {
 			setError(`Failed to login`);
 		}
