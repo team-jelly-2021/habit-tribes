@@ -8,9 +8,6 @@ import HabitDashboard from './components/HabitDashboard';
 import Friends from './components/Friends';
 import Video from './components/Video';
 
-
-
-
 const App = () => {
 
   return (

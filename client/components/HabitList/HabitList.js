@@ -1,4 +1,5 @@
-import { Box, Stack, Flex, useDisclosure } from "@chakra-ui/react";
+import { Box, Stack, Flex, useDisclosure, useToast, Alert } from "@chakra-ui/react";
+import { AlertIcon } from "@chakra-ui/alert";
 import * as React from "react";
 import { DraggableListItem } from "./DraggableListItem";
 import { useDraggableList } from "./useDraggableList";
@@ -10,11 +11,14 @@ import axios from 'axios';
 export const HabitList = () => {
 	const [habits, setHabits] = React.useState([]);
 	const { items, handlePositionUpdate, measurePosition } = useDraggableList(habits);
+	const [notifications, setNotifications] = React.useState([])
 	const { isOpen, onOpen, onClose } = useDisclosure()
+	const toast = useToast()
 
 	React.useEffect(() => {
 		axios.get("/api/habits")
 			.then(({ data }) => {
+				setNotifications(data.filter(habit => habit.notification))
 				setHabits(data);
 			}).catch(e => console.log(e));
 	}, []);
@@ -23,20 +27,62 @@ export const HabitList = () => {
 		const { data } = await axios.post('/api/habits', payload)
 		console.log(data)
 		setHabits([...habits, data])
+		toast({
+			title: "Awesome!",
+			description: "Habit has been created",
+			status: "success",
+			duration: 3000,
+		})
 	}
 
 	const onDelete = async (habitId) => {
 		try {
 			await axios.delete(`/api/habits/${habitId}`)
+			setHabits(habits.filter(habit => habit.id !== habitId))
 		} catch(e) {
-			console.log(e.message)
+			toast({
+				title: "Unknown Error",
+				description: "Something went wrong.",
+				status: "error",
+				duration: 3000,
+			})
 		}
-		setHabits(habits.filter(habit => habit.id !== habitId))
+	}
+
+	const onComplete = async (habitId) => {
+		try {
+			await axios.post(`/api/habits/${habitId}/done`)
+			setHabits(habits.filter(habit => habit.id !== habitId))
+			toast({
+				title: "Goal completed",
+				description: "Great job! Your future self is so proud.",
+				status: "success",
+				duration: 3000,
+			})
+		} catch(e) {
+			toast({
+				title: "Unknown Error",
+				description: "Something went wrong.",
+				status: "error",
+				duration: 3000,
+			})
+		}
 	}
 
 	return (
 		<Box as="section" p="10">
 			<Box maxWidth="600px" mx="auto">
+			{notifications.length && 
+			  <Flex justify="center" mb={4} mt={-4}>
+				  {notifications.map(notification => {
+						return (
+							<Alert status="error">
+								<AlertIcon />
+								Hey! Your past self left you a video about <a href="#" style={{ fontStyle: 'italic', marginLeft: '5px' }}>{notification.name}</a>
+							</Alert>)
+					})}
+				</Flex>
+			}
 				<Stack as="ul" spacing="4">
 					{habits.map((habit, index) => (
 						<DraggableListItem
@@ -57,7 +103,7 @@ export const HabitList = () => {
 							onPositionUpdate={handlePositionUpdate}
 							measurePosition={measurePosition}
 						>
-							<HabitCard habit={habit} onDelete={onDelete} />
+							<HabitCard habit={habit} onDelete={onDelete} onComplete={onComplete}/>
 						</DraggableListItem>
 					))}
 					<ActionsCard onOpenAddHabits={onOpen} />
