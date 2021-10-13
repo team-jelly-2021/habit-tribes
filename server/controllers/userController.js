@@ -256,11 +256,79 @@ userController.checkProgress = async (req, res, next) => {
   return next();
 }
 
-userController.makeFriendRequest = async (req, res, next) => {};
+userController.makeFriendRequest = async (req, res, next) => {
+  const initiatingFriend = req.body.initiatingFriend;
+  const invitedFriend = req.body.invitedFriend;
 
-userController.acceptFriendRequest = async (req, res, next) => {};
+  const newRequestQry = 'INSERT INTO friends (friend_a, friend_b) VALUES ($1, $2)';
 
-userController.removeFriend = async (req, res, next) => {};
+  try {
+    let qry = await db.query(newRequestQry, [initiatingFriend, invitedFriend]);
+    return next();
+  } catch (err) {
+    next({err, message: 'Failed to create invitation'});
+  }
+};
+
+userController.acceptFriendRequest = async (req, res, next) => {
+  const friendshipID = req.body.friendshipID;
+  const invitee = req.body.email;
+
+  const acceptRequestQry = 'UPDATE friends SET request_accepted = TRUE WHERE _id = $1 AND friend_b = $2';
+
+  try {
+    const result = await db.query(acceptRequestQry, [friendshipID, invitee]);
+    console.log('update rowcount', result.rowCount);
+    if (result.rowCount > 0) return next();
+    else next({message: 'Accepting friend request failed - invalid request'});
+  } catch (err) {
+    next({err, message: 'Accepting friend request failed'});
+  }
+};
+
+userController.removeFriend = async (req, res, next) => {
+  const friendshipID = req.body.friendshipID;
+  const invitee = res.locals.email;
+
+  const removeFriendQry = 'DELETE FROM friends WHERE (_id = $1 AND friend_a = $2) OR (_id = $1 AND friend_b = $2)';
+
+  try {
+    const result = await db.query(removeFriendQry, [friendshipID, invitee]);
+    if (result.rowCount > 0) return next();
+    else next({err, message: 'Invalid friendship for deletion.'});
+  } catch (err) {
+    next({err, message: 'Failed to remove friend link'});
+  }
+
+
+};
+
+userController.showFriendRequests = async (req, res, next) => {
+  const invitee = req.body.email;
+
+  const friendReqQry = 'SELECT * FROM friends WHERE friend_a = $1 OR friend_b = $1 AND request_accepted = FALSE';
+
+  try {
+    const result = await db.query(friendReqQry, [invitee]);
+    res.locals.friendRequests = result.rows;
+    next();
+  } catch (err) {
+    next({err, message: 'Failed to retrieve friend requests'});
+  }
+};
+
+userController.getAllFriends = async (req, res, next) => {
+  const user = req.body.email;
+  const friendReqQry = 'SELECT * FROM friends WHERE friend_a = $1 OR friend_b = $1 AND request_accepted = TRUE';
+
+  try {
+    const result = await db.query(friendReqQry, [user]);
+    res.locals.friends = result.rows;
+    next();
+  } catch (err) {
+    next({err, message: 'Failed to retrieve friend list'});
+  }
+};
 
 
 userController.changeDarkmodeSetting = async (req, res, next) => {};

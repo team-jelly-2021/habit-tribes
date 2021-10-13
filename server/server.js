@@ -10,7 +10,7 @@ const loginRouter = require('./routes/loginRouter');
 const registerRouter = require('./routes/registerRouter');
 const habitsPageRouter = require('./routes/habitsPageRouter');
 const videoRouter = require('./routes/videoRouter');
-const friendsPageRouter = require('./routes/friendsPageRouter');
+const friendsRouter = require('./routes/friendsRouter');
 const dailyRouter = require('./routes/dailyRouter');
 
 require('dotenv').config();
@@ -33,7 +33,7 @@ app.use(express.static(__dirname + "../public"));
 app.use('/api/login', loginRouter);
 app.use('/api/register', registerRouter);
 app.use('/api/habits', habitsPageRouter);
-app.use('/api/friends', friendsPageRouter);
+app.use('/api/friends', friendsRouter);
 app.use((req, res) => {
   res.status(404).send('File not found');
 });
