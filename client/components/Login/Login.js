@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
 	Box,
 	Heading,
@@ -12,11 +12,26 @@ import { Card } from "../Login/Card";
 import { EmailLoginForm } from "../Login/EmailLoginForm";
 import { GoogleLoginButton } from "../Login/GoogleLoginButton";
 
-const Login = (props) => {
-  
+const Login = () => {
+
+	// catches error when login fails
+async function handleSubmit(e) {
+	e.preventDefault();
+
+	try {
+		setError("");
+		setLoading(true);
+		await login(emailRef.current.value, passwordRef.current.value);
+		history.push("/");
+	} catch {
+		setError("Failed to log in");
+	}
+
+	setLoading(false);
+}
+	
   return (
-		<>
-			{/* // start new component */}
+
 			<Box
 				as="section"
 				bgGradient={{
@@ -71,38 +86,6 @@ const Login = (props) => {
 					</Text>
 				</Card>
 			</Box>
-
-			{/* // end new component */}
-			{/* <div>
-				<h1>Habit application in Login.js</h1>
-				<div className="login">
-					<h2>Login</h2>
-					<form>
-						<div className="emailInput">
-							<input
-								type="email"
-								id="email"
-								value={state.email}
-								onChange={handleChange}
-								placeholder="Enter Email"
-							/>
-						</div>
-						<div className="passwordInput">
-							<input
-								type="password"
-								id="password"
-								value={state.password}
-								onChange={handleChange}
-								placeholder="Enter Password"
-							/>
-						</div>
-						<button onClick={handleSubmitClick} className="button">
-							Login
-						</button>
-					</form>
-				</div>
-			</div> */}
-		</>
 	);
 }
 
