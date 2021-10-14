@@ -9,11 +9,13 @@ import Friends from './components/Friends';
 import Video from './components/Video';
 import { AuthProvider } from "../lib/AuthContext";
 import PrivateRoute from './components/PrivateRoute'
+import TokenWrapper from './components/TokenWrapper'
 
 const App = () => {
-	
+
 	return (
 		<AuthProvider>
+		 <TokenWrapper>
 			<ChakraProvider>
 				<Switch>
 					<Route exact path="/" component={HomePage} />
@@ -29,6 +31,7 @@ const App = () => {
 					</Route>
 				</Switch>
 			</ChakraProvider>
+			</TokenWrapper>
 		</AuthProvider>
 	);
 }

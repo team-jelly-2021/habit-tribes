@@ -1,18 +1,24 @@
 import { Box, Stack, Flex, useDisclosure } from "@chakra-ui/react";
-import * as React from "react";
+import React, { useEffect } from "react";
 import { DraggableListItem } from "./DraggableListItem";
 import { useDraggableList } from "./useDraggableList";
 import AddHabits from "../AddHabitModal/AddHabits";
 import HabitCard from "./HabitCard";
 import ActionsCard from './ActionsCard'
 import axios from 'axios';
+import { useAuth } from '../../../lib/AuthContext'
+import { useToken } from '../../../lib/useToken'
+
+
 
 export const HabitList = () => {
 	const [habits, setHabits] = React.useState([]);
 	const { items, handlePositionUpdate, measurePosition } = useDraggableList(habits);
 	const { isOpen, onOpen, onClose } = useDisclosure()
+ 
 
-	React.useEffect(() => {
+	useEffect(() => {
+		console.log('habit list getting habits')
 		axios.get("/api/habits")
 			.then(({ data }) => {
 				setHabits(data);
