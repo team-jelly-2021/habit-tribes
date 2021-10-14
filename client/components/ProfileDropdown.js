@@ -10,26 +10,24 @@ import {
 	useMenuButton,
 	useColorModeValue as mode,
 } from "@chakra-ui/react";
-import * as React from "react";
+import { useAuth } from '../../lib/AuthContext';
+import React, { useState } from "react";
+import { useHistory } from 'react-router-dom';
 
-const UserAvatar = () => (
-	<Avatar
-		size="sm"
-		src="https://uploads-ssl.webflow.com/60ef78253620692c7cbbc3dd/612fea34549e2609120d3a4f_Travis%20-%20circle%20-%20transparent.png"
-		name="Travis Lockett"
-	/>
-);
+const UserAvatar = () => {
+	const { currentUser } = useAuth();
 
-function deleteAllCookies() {
-	var cookies = document.cookie.split(";");
+	// The name field needs to be added to the firebase user object on sign up
+	// Then that property needs to replace the Jim Carrey string
+	return (
+		<Avatar
+			size="sm"
+			src={currentUser?.photoURL}
+			name="Jim Carrey"
+		/>
+	)
+};
 
-	for (var i = 0; i < cookies.length; i++) {
-			var cookie = cookies[i];
-			var eqPos = cookie.indexOf("=");
-			var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-			document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-	}
-}
 const ProfileMenuButton = (props) => {
 	const buttonProps = useMenuButton(props);
 	return (
@@ -49,33 +47,47 @@ const ProfileMenuButton = (props) => {
 	);
 };
 
-export const ProfileDropdown = () => (
-	<Menu>
-		<ProfileMenuButton />
-		<MenuList
-			rounded="md"
-			shadow="lg"
-			py="1"
-			color={mode("gray.600", "inherit")}
-			fontSize="sm"
-		>
-			<HStack px="3" py="4">
-				<UserAvatar />
-				<Box lineHeight="1">
-					<Text fontWeight="semibold">Travis Lockett</Text>
-					<Text mt="1" fontSize="xs" color="gray.500">
-						travislockett1@gmail.com
+export const ProfileDropdown = () => {
+	const history = useHistory();
+	const [error, setError] = useState("");
+	console.log('Profile dropdown state changed')
+	const { currentUser, logout } = useAuth();
+
+		// logout function handler
+		async function handleLogout() {
+			setError("");
+			try {
+				await logout();
+				history.push("/login");
+			} catch {
+				setError("Failed to log out");
+			}
+		}
+	
+	return (
+		<Menu>
+			<ProfileMenuButton />
+			<MenuList
+				rounded="md"
+				shadow="lg"
+				py="1"
+				color={mode("gray.600", "inherit")}
+				fontSize="sm"
+			>
+				<HStack px="3" py="4">
+					<UserAvatar />
+					<Box lineHeight="1">
+						<Text fontWeight="semibold">Jim Carrey</Text>
+						<Text mt="1" fontSize="xs" color="gray.500">
+							{currentUser?.email}
 					</Text>
-				</Box>
-			</HStack>
-			<MenuItem fontWeight="medium">Account Settings</MenuItem>
-			<MenuItem fontWeight="medium" color={mode("red.500", "red.300")} onClick={() => {
-				localStorage.clear();
-				deleteAllCookies();
-				window.location = '/'
-			}}>
-				Sign out
+					</Box>
+				</HStack>
+				<MenuItem fontWeight="medium">Account Settings</MenuItem>
+				<MenuItem fontWeight="medium" color={mode("red.500", "red.300")} onClick={handleLogout}>
+					Sign out
 			</MenuItem>
-		</MenuList>
-	</Menu>
-);
+			</MenuList>
+		</Menu>
+	)
+};

@@ -131,16 +131,16 @@ userController.addHabit = async (req, res, next) => {
  * @returns void
  */
 userController.getHabits = async (req, res, next) => {
-  const userId = 1
-  const sql = fs.readFileSync(path.join(__dirname, '../queries/get_habits.sql')).toString()
+  const userId = 1;
+  const sql = fs.readFileSync(path.join(__dirname, '../queries/get_habits.sql')).toString();
   try {
     const { rows } = 
-      await db.query(sql, [userId])
-    res.locals.rows = rows ?? []
+      await db.query(sql, [userId]);
+    res.locals.rows = rows ?? [];
   } catch(e) {
-    next(e)
+    next(e);
   }
-  next()
+  next();
 }
 
 /**
