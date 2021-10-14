@@ -23,6 +23,10 @@ router.post('/requests', userController.showFriendRequests, (req, res, next) => 
   return res.json(res.locals.friendRequests);
 });
 
+router.get('/search', userController.findUser, (req, res, next) => {
+  return res.json(res.locals.results);
+});
+
 router.post('/', userController.makeFriendRequest, (req, res, next) => {
   // first invoke controller to make friend request
   // return confirmation

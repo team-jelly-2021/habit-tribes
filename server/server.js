@@ -5,6 +5,7 @@ const cors = require('cors');
 const db = require('./models/usersDatabaseModels.js');
 const cookieParser = require('cookie-parser');
 const cron = require('node-cron');
+require('dotenv').config();
 
 const loginRouter = require('./routes/loginRouter');
 const registerRouter = require('./routes/registerRouter');
@@ -13,7 +14,7 @@ const videoRouter = require('./routes/videoRouter');
 const friendsRouter = require('./routes/friendsRouter');
 const dailyRouter = require('./routes/dailyRouter');
 
-require('dotenv').config();
+
 
 cron.schedule('59 59 23 * * *', () => {
   app.use('/daily', dailyRouter);

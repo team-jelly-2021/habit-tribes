@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const encryptHelper = require('../utils/encryptHelper');
 const { getDate } = require('../utils/getDate')
 const db = require('../models/usersDatabaseModels.js');
 
@@ -327,6 +328,29 @@ userController.getAllFriends = async (req, res, next) => {
     next();
   } catch (err) {
     next({err, message: 'Failed to retrieve friend list'});
+  }
+};
+
+userController.findUser = async (req, res, next) => {
+  const query = req.query.query;
+  console.log('qry', process.env.CRYPTO_KEY);
+  const userQuery = 'SELECT * from users WHERE lower(name) LIKE $1';
+
+  try {
+    const output = [];
+    const result = await db.query(userQuery, [query.toLowerCase()]);
+    console.log('rows', result.rows);
+    result.rows.forEach(row => {
+      const rowOutput = {}
+      rowOutput.email = encryptHelper.encryptString(row.email);
+      rowOutput.name = row.name;
+      output.push(rowOutput);
+    });
+
+    res.locals.results = output;
+    next();
+  } catch (err) {
+    next({err, message: 'Failed to perform user search'});
   }
 };
 
