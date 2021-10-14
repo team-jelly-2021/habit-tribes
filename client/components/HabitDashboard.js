@@ -1,5 +1,5 @@
 import { Flex, HStack, useColorModeValue as mode } from "@chakra-ui/react";
-import * as React from "react";
+import React, { useState } from 'react';
 // import { Logo } from "./Logo";
 import { MobileHamburgerMenu } from "./MobileHamburgerMenu";
 import { NavMenu } from "./NavMenu";
@@ -8,16 +8,35 @@ import { PageContent } from "./PageContent";
 import { PageHeader } from "./PageHeader";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useMobileMenuState } from "./useMobileMenuState";
+import { useAuth } from '../../lib/AuthContext'
 
 export const HabitDashboard = () => {
 	const { isMenuOpen, toggle } = useMobileMenuState();
-	return (
+	const { currentUser } = useAuth();
+
+
+	// gets token for current logged in user 
+	// returns an object with the headers set with auth token from fireauth
+	 const createToken = async () => {
+    const token = currentUser && (await currentUser.getIdToken());
+    const payloadHeader = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
+    return payloadHeader;
+  }
+
+  const newHeader = createToken();
+  console.log(newHeader);
+
+		return (
 		<Flex direction="column" bg={mode("gray.100", "gray.800")} height="100vh">
 			<Flex align="center" bg="blue.400" color="white" px="6" minH="16">
 				<Flex justify="space-between" align="center" w="full">
 					<MobileHamburgerMenu onClick={toggle} isOpen={isMenuOpen} />
 					<NavMenu.Mobile isOpen={isMenuOpen} />
-
 					{/* Desktop Logo placement */}
 					{/* <Logo
 						display={{
