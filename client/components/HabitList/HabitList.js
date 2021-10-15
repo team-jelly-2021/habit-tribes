@@ -74,11 +74,13 @@ export const HabitList = () => {
 						</DraggableListItem>
 					))}
 					<ActionsCard onOpenAddHabits={onOpen} />
-					<AddHabits
+					{ isOpen &&
+						<AddHabits
 						isOpen={isOpen}
 						onClose={onClose}
 						onAddHabit={onAddHabit}
 					/>
+					}
 				</Stack>
 			</Box>
 		</Box>
