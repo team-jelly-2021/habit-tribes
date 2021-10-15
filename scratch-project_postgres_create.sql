@@ -26,7 +26,7 @@ CREATE TABLE "public"."habit" (
     "id" int4 NOT NULL DEFAULT nextval('habit_id_seq'::regclass),
     "name" varchar NOT NULL,
     "user_id" int4 NOT NULL,
-    "createdat" date NOT NULL,
+    "created_at" date NOT NULL,
     "frequency" varchar,
     "reminder" int4,
     "private" bool NOT NULL DEFAULT false,

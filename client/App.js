@@ -7,9 +7,10 @@ import Register from './components/Register/Register';
 import HabitDashboard from './components/HabitDashboard';
 import Friends from './components/Friends';
 import Video from './components/Video';
-import { AuthProvider } from "../lib/AuthContext";
+import { AuthProvider } from "./lib/AuthContext";
 import PrivateRoute from './components/PrivateRoute'
 import TokenWrapper from './components/TokenWrapper'
+
 
 const App = () => {
 

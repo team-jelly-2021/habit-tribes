@@ -22,6 +22,10 @@ router.post('/', userController.addHabit, (req, res, next) => {
   return res.status(201).json(res.locals.habit)
 });
 
+router.post('/:habitId/done', userController.completeHabit, (req, res, next) => {
+  return res.sendStatus(204)
+})
+
 router.delete('/:habitId', userController.deleteHabit, (req, res, next) => {
   return res.status(203).json(res.locals.habit)
 })

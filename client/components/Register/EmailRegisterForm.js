@@ -2,8 +2,7 @@ import { Button, FormControl, FormLabel, Input, Alert, AlertIcon } from "@chakra
 import { chakra, useColorModeValue } from "@chakra-ui/system";
 import React, { useState, useRef } from "react";
 import { useHistory } from "react-router";
-import { useAuth } from "../../../lib/AuthContext";
-import { AuthProvider } from '../../../lib/AuthContext'
+import { useAuth } from "../../lib/AuthContext";
 
 export const EmailRegisterForm = (props) => {
 	const fullNameRef = useRef();
