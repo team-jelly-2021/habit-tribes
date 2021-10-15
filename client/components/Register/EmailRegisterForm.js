@@ -28,7 +28,7 @@ export const EmailRegisterForm = (props) => {
 		try {
 			setError("");
 			setLoading(true);
-			await signup(emailRef.current.value, passwordRef.current.value);
+			await signup(emailRef.current.value, passwordRef.current.value, fullNameRef.current.value);
 			history.push("/habits");
 		} catch {
 			setError(`Failed to login`);
