@@ -43,7 +43,7 @@ app.use(express.static(__dirname + "../public"));
 app.use('/api/login', loginRouter);
 app.use('/api/register', registerRouter);
 app.use('/api/habits', isAuthenticated, habitsPageRouter);
-app.use('/api/friends', isAuthenticated, friendsRouter);
+app.use('/api/friends', friendsRouter);
 
 app.use((req, res) => {
   res.status(404).send('File not found');
