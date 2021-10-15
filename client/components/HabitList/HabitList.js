@@ -17,7 +17,7 @@ export const HabitList = () => {
 	const toast = useToast()
 	const { currentUser } = useAuth();
 
-	useEffect(() => {
+	React.useEffect(() => {
 		fetchHabits();
 	}, []);
 
@@ -38,7 +38,6 @@ export const HabitList = () => {
 
 	const onAddHabit = async (payload) => {
 		const { data } = await axios.post('/api/habits', payload)
-		console.log(data)
 		setHabits([...habits, data])
 		toast({
 			title: "Awesome!",
@@ -85,7 +84,7 @@ export const HabitList = () => {
 	return (
 		<Box as="section" p="10">
 			<Box maxWidth="600px" mx="auto">
-			{notifications.length && 
+			{!!notifications.length && 
 			  <Flex justify="center" mb={4} mt={-4}>
 				  {notifications.map(notification => {
 						return (
@@ -120,7 +119,7 @@ export const HabitList = () => {
 						</DraggableListItem>
 					))}
 					<ActionsCard onOpenAddHabits={onOpen} />
-					{ isOpen &&
+					{!!isOpen &&
 						<AddHabits
 						isOpen={isOpen}
 						onClose={onClose}
