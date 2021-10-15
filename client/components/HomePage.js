@@ -10,7 +10,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { SunIcon } from "@chakra-ui/icons";
 import { Route, Redirect } from "react-router-dom";
-import { useAuth } from '../../lib/AuthContext';
+import { useAuth } from '../lib/AuthContext';
 
 const HomePage = () => {
 	const { toggleColorMode } = useColorMode();

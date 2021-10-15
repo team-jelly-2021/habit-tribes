@@ -7,7 +7,7 @@ import AddHabits from "../AddHabitModal/AddHabits";
 import HabitCard from "./HabitCard";
 import ActionsCard from "./ActionsCard";
 import axios from "axios";
-import { useAuth } from "../../../lib/AuthContext";
+import { useAuth } from "../../lib/AuthContext";
 
 export const HabitList = () => {
 	const [habits, setHabits] = React.useState([]);
