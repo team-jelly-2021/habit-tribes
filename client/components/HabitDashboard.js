@@ -12,24 +12,6 @@ import { useAuth } from '../../lib/AuthContext'
 
 export const HabitDashboard = () => {
 	const { isMenuOpen, toggle } = useMobileMenuState();
-	const { currentUser } = useAuth();
-
-
-	// gets token for current logged in user 
-	// returns an object with the headers set with auth token from fireauth
-	 const createToken = async () => {
-    const token = currentUser && (await currentUser.getIdToken());
-    const payloadHeader = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  };
-    return payloadHeader;
-  }
-
-  const newHeader = createToken();
-  console.log(newHeader);
 
 		return (
 		<Flex direction="column" bg={mode("gray.100", "gray.800")} height="100vh">
