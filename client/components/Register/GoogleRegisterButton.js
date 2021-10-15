@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react";
 import * as React from "react";
 import { FaGoogle } from "react-icons/fa";
-import { AuthProvider } from '../../../lib/AuthContext'
+import { AuthProvider } from '../../lib/AuthContext'
 
 export const GoogleRegisterButton = (props) => {
 	console.log(AuthProvider.signinWithGitHub)

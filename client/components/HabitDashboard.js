@@ -8,7 +8,7 @@ import { PageContent } from "./PageContent";
 import { PageHeader } from "./PageHeader";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { useMobileMenuState } from "./useMobileMenuState";
-import { useAuth } from '../../lib/AuthContext'
+
 
 export const HabitDashboard = () => {
 	const { isMenuOpen, toggle } = useMobileMenuState();

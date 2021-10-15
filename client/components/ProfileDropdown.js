@@ -10,7 +10,7 @@ import {
 	useMenuButton,
 	useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { useAuth } from '../../lib/AuthContext';
+import { useAuth } from '../lib/AuthContext';
 import React, { useState } from "react";
 import { useHistory } from 'react-router-dom';
 

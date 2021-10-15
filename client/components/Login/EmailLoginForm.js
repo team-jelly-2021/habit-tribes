@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { chakra, useColorModeValue } from "@chakra-ui/system";
 import React, { useState, useRef } from "react";
-import { useAuth } from "../../../lib/AuthContext";
+import { useAuth } from "../../lib/AuthContext";
 import { useHistory } from "react-router";
 
 export const EmailLoginForm = (props) => {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useToken } from '../../lib/useToken'
+import { useToken } from '../lib/useToken'
 
 function TokenWrapper({ children }) {
   const token = useToken();
