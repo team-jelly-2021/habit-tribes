@@ -1,38 +1,51 @@
 import { Box, Stack, Flex, useDisclosure } from "@chakra-ui/react";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { DraggableListItem } from "./DraggableListItem";
 import { useDraggableList } from "./useDraggableList";
 import AddHabits from "../AddHabitModal/AddHabits";
 import HabitCard from "./HabitCard";
-import ActionsCard from './ActionsCard'
-import axios from 'axios';
+import ActionsCard from "./ActionsCard";
+import axios from "axios";
+import { useAuth } from "../../../lib/AuthContext";
 
 export const HabitList = () => {
 	const [habits, setHabits] = React.useState([]);
 	const { items, handlePositionUpdate, measurePosition } = useDraggableList(habits);
-	const { isOpen, onOpen, onClose } = useDisclosure()
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { currentUser } = useAuth();
 
-	React.useEffect(() => {
-		axios.get("/api/habits")
-			.then(({ data }) => {
-				setHabits(data);
-			}).catch(e => console.log(e));
+
+	useEffect(() => {
+		fetchHabits();
 	}, []);
 
+	const fetchHabits = async () => {
+		try {
+			const token = await currentUser.getIdToken();
+			const fetchedHabits = await axios.get(`/api/habits/`, {
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			});
+			setHabits(fetchedHabits.data);
+		} catch (e) {
+			console.log(e.message);
+		}
+	};
+
 	const onAddHabit = async (payload) => {
-		const { data } = await axios.post('/api/habits', payload)
-		console.log(data)
-		setHabits([...habits, data])
-	}
+		const { data } = await axios.post("/api/habits", payload);
+		setHabits([...habits, data]);
+	};
 
 	const onDelete = async (habitId) => {
 		try {
-			await axios.delete(`/api/habits/${habitId}`)
-		} catch(e) {
-			console.log(e.message)
+			await axios.delete(`/api/habits/${habitId}`);
+		} catch (e) {
+			console.log(e.message);
 		}
-		setHabits(habits.filter(habit => habit.id !== habitId))
-	}
+		setHabits(habits.filter((habit) => habit.id !== habitId));
+	};
 
 	return (
 		<Box as="section" p="10">
@@ -61,7 +74,13 @@ export const HabitList = () => {
 						</DraggableListItem>
 					))}
 					<ActionsCard onOpenAddHabits={onOpen} />
-					<AddHabits isOpen={isOpen} onClose={onClose} onAddHabit={onAddHabit} />
+					{ isOpen &&
+						<AddHabits
+						isOpen={isOpen}
+						onClose={onClose}
+						onAddHabit={onAddHabit}
+					/>
+					}
 				</Stack>
 			</Box>
 		</Box>
