@@ -6,12 +6,18 @@ const db = require('./models/usersDatabaseModels.js');
 const cookieParser = require('cookie-parser');
 const cron = require('node-cron');
 
+const decodeIDToken = require('./utils/authenticateToken.js')
+
 const loginRouter = require('./routes/loginRouter');
 const registerRouter = require('./routes/registerRouter');
 const habitsPageRouter = require('./routes/habitsPageRouter');
 const videoRouter = require('./routes/videoRouter');
 const friendsPageRouter = require('./routes/friendsPageRouter');
 const dailyRouter = require('./routes/dailyRouter');
+const isAuthenticated = require('./utils/isAuthenticated')
+
+
+
 
 require('dotenv').config();
 
@@ -24,6 +30,9 @@ app.use(express.json());
 app.use(cors({ credentials: true, origin: "http://localhost:8080" }));
 app.use(cookieParser());
 
+// verify tokens from client side
+app.use(decodeIDToken);
+
 // allow api to receive data from client app
 // app.use(express.urlencoded());
 
@@ -32,7 +41,7 @@ app.use(express.static(__dirname + "../public"));
 
 app.use('/api/login', loginRouter);
 app.use('/api/register', registerRouter);
-app.use('/api/habits', habitsPageRouter);
+app.use('/api/habits', isAuthenticated, habitsPageRouter);
 app.use('/api/friends', friendsPageRouter);
 app.use((req, res) => {
   res.status(404).send('File not found');

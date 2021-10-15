@@ -33,6 +33,7 @@
     "dotenv-webpack": "^7.0.3",
     "express": "^4.17.1",
     "firebase": "^8.0.0",
+    "firebase-admin": "^9.3.0",
     "framer-motion": "^4.1.17",
     "jsonwebtoken": "^8.5.1",
     "mini-css-extract-plugin": "^2.3.0",

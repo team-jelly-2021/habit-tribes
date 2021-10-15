@@ -5,8 +5,9 @@ import { DraggableListItem } from "./DraggableListItem";
 import { useDraggableList } from "./useDraggableList";
 import AddHabits from "../AddHabitModal/AddHabits";
 import HabitCard from "./HabitCard";
-import ActionsCard from './ActionsCard'
-import axios from 'axios';
+import ActionsCard from "./ActionsCard";
+import axios from "axios";
+import { useAuth } from "../../../lib/AuthContext";
 
 export const HabitList = () => {
 	const [habits, setHabits] = React.useState([]);
@@ -14,14 +15,26 @@ export const HabitList = () => {
 	const [notifications, setNotifications] = React.useState([])
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const toast = useToast()
+	const { currentUser } = useAuth();
 
-	React.useEffect(() => {
-		axios.get("/api/habits")
-			.then(({ data }) => {
-				setNotifications(data.filter(habit => habit.notification))
-				setHabits(data);
-			}).catch(e => console.log(e));
+	useEffect(() => {
+		fetchHabits();
 	}, []);
+
+	const fetchHabits = async () => {
+		try {
+			const token = await currentUser.getIdToken();
+			const fetchedHabits = await axios.get(`/api/habits/`, {
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			});
+			setNotifications(data.filter(habit => habit.notification))
+			setHabits(fetchedHabits.data);
+		} catch (e) {
+			console.log(e.message);
+		}
+	};
 
 	const onAddHabit = async (payload) => {
 		const { data } = await axios.post('/api/habits', payload)
@@ -107,7 +120,13 @@ export const HabitList = () => {
 						</DraggableListItem>
 					))}
 					<ActionsCard onOpenAddHabits={onOpen} />
-					<AddHabits isOpen={isOpen} onClose={onClose} onAddHabit={onAddHabit} />
+					{ isOpen &&
+						<AddHabits
+						isOpen={isOpen}
+						onClose={onClose}
+						onAddHabit={onAddHabit}
+					/>
+					}
 				</Stack>
 			</Box>
 		</Box>

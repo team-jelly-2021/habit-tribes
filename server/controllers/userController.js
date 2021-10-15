@@ -131,7 +131,7 @@ userController.addHabit = async (req, res, next) => {
  * @returns void
  */
 userController.getHabits = async (req, res, next) => {
-  const userId = 1;
+  const userId = req.currentUser.user_id;
   const sql = fs.readFileSync(path.join(__dirname, '../queries/get_habits.sql')).toString();
   try {
     const { rows } = 
