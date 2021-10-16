@@ -100,6 +100,12 @@ CREATE TABLE public.today (
   OIDS=FALSE
 );
 
+CREATE TABLE user_cache (
+    "uid" character varying PRIMARY KEY,
+    "full_name" character varying,
+    "email" character varying
+);
+
 ALTER TABLE public.users_habits_join ADD CONSTRAINT "users_habits_join_fk0" FOREIGN KEY ("users_id") REFERENCES "users"("email");
 ALTER TABLE public.users_habits_join ADD CONSTRAINT "users_habits_join_fk1" FOREIGN KEY ("habits_id") REFERENCES "habits"("name");
 

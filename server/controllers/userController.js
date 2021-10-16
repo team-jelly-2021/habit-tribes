@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
+const encryptHelper = require('../utils/encryptHelper');
 const fs = require('fs')
 const path = require('path')
 const { getDate } = require('../utils/getDate')
 const db = require('../models/usersDatabaseModels.js');
-
+const admin = require('firebase-admin');
 
 const userController = {};
 
@@ -47,6 +48,33 @@ userController.createUser = async (req, res, next) => {
     return res.status(400).send('Invalid input');
   }
 };
+
+
+// create user controller for registerRouter
+userController.createShadowUser = async (req, res, next) => {
+  try {
+    // pull out name, email, password & phone number from request body registration page
+    const { uid, fullName, email } = req.body;
+
+    // if name, email or password are null, registration status is false
+    if (uid === null || fullName === null || email === null) {
+      res.locals.registrationStatus = false;
+      return next();
+    }
+
+    // add user to database 
+    const addUserQuery = `INSERT INTO user_cache (uid, full_name, email) VALUES ($1, $2, $3);`;
+    const addedUser = await db.query(addUserQuery, [uid, fullName, email]);
+    res.locals.user = addedUser;
+    res.locals.registrationStatus = true;
+    return next();
+  }
+  catch (error) {
+    console.log(error);
+    return res.status(400).send('Invalid input');
+  }
+};
+
 
 // verify user controller for loginRouter
 userController.verifyUser = async (req, res, next) => {
@@ -248,12 +276,129 @@ userController.checkProgress = async (req, res, next) => {
   return next();
 }
 
-userController.makeFriendRequest = async (req, res, next) => {};
+userController.makeFriendRequest = async (req, res, next) => {
+  const initiatingFriend = req.currentUser.uid;
+  const invitedFriend = req.body.invitedFriend;
 
-userController.acceptFriendRequest = async (req, res, next) => {};
+  const newRequestQry = 'INSERT INTO friends (friend_a, friend_b) VALUES ($1, $2)';
 
-userController.removeFriend = async (req, res, next) => {};
+  try {
+    let qry = await db.query(newRequestQry, [initiatingFriend, invitedFriend]);
+    return next();
+  } catch (err) {
+    next({err, message: 'Failed to create invitation'});
+  }
+};
 
+userController.acceptFriendRequest = async (req, res, next) => {
+  const friendshipID = req.body.friendshipID;
+  const invitee = req.currentUser.uid;
+
+  const acceptRequestQry = 'UPDATE friends SET request_accepted = TRUE WHERE _id = $1 AND friend_b = $2';
+
+  try {
+    const result = await db.query(acceptRequestQry, [friendshipID, invitee]);
+    console.log('update rowcount', result.rowCount);
+    if (result.rowCount > 0) return next();
+    else next({message: 'Accepting friend request failed - invalid request'});
+  } catch (err) {
+    next({err, message: 'Accepting friend request failed'});
+  }
+};
+
+userController.removeFriend = async (req, res, next) => {
+  const friendshipID = req.body.friendshipID;
+  const invitee = res.currentUser.uid;
+
+  const removeFriendQry = 'DELETE FROM friends WHERE (_id = $1 AND friend_a = $2) OR (_id = $1 AND friend_b = $2)';
+
+  try {
+    const result = await db.query(removeFriendQry, [friendshipID, invitee]);
+    if (result.rowCount > 0) return next();
+    else next({err, message: 'Invalid friendship for deletion.'});
+  } catch (err) {
+    next({err, message: 'Failed to remove friend link'});
+  }
+
+};
+
+userController.showFriendRequests = async (req, res, next) => {
+  const invitee = req.currentUser.uid;
+
+  const friendReqQry = `
+      SELECT  f.friend_a,
+              a.full_name,
+              a.uid
+              f.friend_b,
+              b.full_name,
+              b.uid,
+              f.request_accepted
+      FROM friends f
+      INNER JOIN user_cache a
+      ON f.friend_a = a.uid
+      INNER JOIN user_cache b
+      ON f.friend_b = b.uid
+      WHERE f.friend_a = $1 OR f.friend_b = $1 AND f.request_accepted = FALSE`;
+
+  try {
+    const result = await db.query(friendReqQry, [invitee]);
+    res.locals.friendRequests = result.rows;
+    next();
+  } catch (err) {
+    next({err, message: 'Failed to retrieve friend requests'});
+  }
+};
+
+userController.getAllFriends = async (req, res, next) => {
+  const user = req.currentUser.uid;
+  //const friendReqQry = `SELECT * FROM friends WHERE friend_a = $1 OR friend_b = $1 AND request_accepted = TRUE`;
+
+  const friendReqQry = `
+      SELECT  f.friend_a,
+                  a.full_name,
+                  a.uid
+                  f.friend_b,
+                  b.full_name,
+                  b.uid,
+                  f.request_accepted
+      FROM friends f
+      INNER JOIN user_cache a
+      ON f.friend_a = a.uid
+      INNER JOIN user_cache b
+      ON f.friend_b = b.uid
+      WHERE f.friend_a = $1 OR f.friend_b = $1 AND f.request_accepted = TRUE`;
+
+  try {
+    const result = await db.query(friendReqQry, [user]);
+    res.locals.friends = result.rows;
+    next();
+  } catch (err) {
+    next({err, message: 'Failed to retrieve friend list'});
+  }
+};
+
+userController.findUser = async (req, res, next) => {
+  const query = req.query.query;
+  console.log('qry', process.env.CRYPTO_KEY);
+  const userQuery = 'SELECT * from user_cache WHERE (lower(full_name) LIKE $1) OR (lower(email) = $1)';
+
+  try {
+    const output = [];
+    const result = await db.query(userQuery, [query.toLowerCase()]);
+    console.log('rows', result.rows);
+    result.rows.forEach(row => {
+      const rowOutput = {}
+      rowOutput.uid = row.uid;
+      rowOutput.full_name = row.full_name;
+      output.push(rowOutput);
+    });
+
+    res.locals.results = output;
+    next();
+  } catch (err) {
+    next({err, message: 'Failed to perform user search'});
+  }
+};
 
 userController.changeDarkmodeSetting = async (req, res, next) => {};
 
