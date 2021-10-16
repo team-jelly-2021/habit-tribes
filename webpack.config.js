@@ -7,7 +7,7 @@ require('regenerator-runtime/runtime')
 require('dotenv').config();
 
 module.exports = {
-	mode: 'development',
+	mode: process.env.NODE_ENV,
 	entry: ["regenerator-runtime/runtime.js", './src/index.js'],
 
 	output: {

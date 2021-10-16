@@ -133,13 +133,13 @@ userController.deleteAccount = async (req, res, next) => {}; //stretch
  * @returns void
  */
 userController.addHabit = async (req, res, next) => {
-  res.locals.user = 1 // temp variable until auth provides user_id
+  const userId = req.currentUser.user_id;
   const { name, reminder, frequency, isPrivate } = req.body
   try {
     const query = 'INSERT INTO habit (name, user_id, reminder, frequency, private) VALUES ($1, $2, $3, $4, $5) RETURNING *';
     const { rows: [ habit ]} = await db.query(query, [
       name,
-      res.locals.user,
+      userId,
       reminder,
       frequency,
       isPrivate

@@ -24,13 +24,13 @@ export const HabitList = () => {
 	const fetchHabits = async () => {
 		try {
 			const token = await currentUser.getIdToken();
-			const fetchedHabits = await axios.get(`/api/habits/`, {
+			const { data } = await axios.get(`/api/habits/`, {
 				headers: {
 					'Authorization': `Bearer ${token}`
 				}
 			});
 			setNotifications(data.filter(habit => habit.notification))
-			setHabits(fetchedHabits.data);
+			setHabits(data);
 		} catch (e) {
 			console.log(e.message);
 		}
@@ -64,7 +64,7 @@ export const HabitList = () => {
 	const onComplete = async (habitId) => {
 		try {
 			await axios.post(`/api/habits/${habitId}/done`)
-			setHabits(habits.filter(habit => habit.id !== habitId))
+			fetchHabits()
 			toast({
 				title: "Goal completed",
 				description: "Great job! Your future self is so proud.",
@@ -108,7 +108,7 @@ export const HabitList = () => {
 								scale: 1.12,
 							}}
 							height="16"
-							bg={`gray.${(index + 1) * 100}`}
+							bg={habit.complete ? `green.100` : `gray.100`}
 							borderRadius="lg"
 							boxShadow="md"
 							position="relative"
