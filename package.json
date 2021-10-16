@@ -5,7 +5,7 @@
   "main": "index.js",
   "prettier": "prettier-airbnb-config",
   "scripts": {
-    "start": "nodemon server/server.js",
+    "start": "NODE_ENV=development nodemon server/server.js",
     "dev": "concurrently \"cross-env NODE_ENV=development webpack-dev-server --history-api-fallback \" \"nodemon ./server/server.js\"",
     "test": "jest --verbose",
     "lint": "./node_modules/.bin/eslint",
