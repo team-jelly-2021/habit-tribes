@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Flex, HStack, SimpleGrid, useColorModeValue as mode } from "@chakra-ui/react";
 import { MobileHamburgerMenu } from "./MobileHamburgerMenu";
-import { Notification } from "./Notification";
-import { PageContent } from "./PageContent";
+
 import { PageHeader } from "./PageHeader";
-import { ChakraProvider} from "@chakra-ui/react";
-import { Box,Badge,Avatar,Button, Input, Stack, Heading, Text, InputRightElement, Divider } from "@chakra-ui/react";
+import { Box,Badge,Avatar,Button, Input, Stack, Heading, Text, InputRightElement, Divider, Accordion, AccordionIcon, AccordionButton, AccordionTitle, AccordionItem, AccordionPanel } from "@chakra-ui/react";
 import { NavMenu } from "./NavMenu";
 import { useMobileMenuState } from "./useMobileMenuState";
 import axios from 'axios';
-import { FiSearch } from 'react-icons/fi';
 import { useAuth } from '../lib/AuthContext';
+import { useHistory } from 'react-router-dom';
 
 const AllUsers = (props) => { 
   const { isMenuOpen, toggle } = useMobileMenuState();
@@ -23,6 +21,7 @@ const AllUsers = (props) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchString, setSearchString] = useState("");
 
+  const history = useHistory();
   const { currentUser } = useAuth();
   console.log('user   ', currentUser);
     
@@ -31,6 +30,14 @@ const AllUsers = (props) => {
   useEffect(() => {
     console.log('FRIENDS: in useEffect');
 
+    
+      getAllFriends();
+      getAllRequests();  
+      
+
+  },[]);
+
+  const getAllFriends = () => {
     axios.get('/api/friends/allFriends')
       .then(res => {
         console.log('res', res);
@@ -42,20 +49,18 @@ const AllUsers = (props) => {
     
         setAllUsers(res.data);
       });
+  };
 
-        
-      axios.get('/api/friends/requests', {
-      })
-        .then(res => {
-          console.log('friend reqs', res);
-          const requests = res.data;
-          setFriendRequests(requests);
-          console.log(requests);
-        });
-
-  },[]);
-
-
+  const getAllRequests = () => {
+    axios.get('/api/friends/requests', {
+    })
+      .then(res => {
+        console.log('friend reqs', res);
+        const requests = res.data;
+        setFriendRequests(requests);
+        console.log(requests);
+      });
+  };
 
 
   const property = {
@@ -70,16 +75,28 @@ const AllUsers = (props) => {
       friendshipID: user._id
     })
       .then(res => {
-        user.request_accepted = TRUE;
+        user.request_accepted = true;
+
+        searchResults.forEach(res => {
+          if (res._id == user._id) {
+            res.friend_b = "1";
+            res.request_accepted = false
+          }
+        setSearchResults([]);
+        });
+
+        getAllFriends();
+        getAllRequests();
       });
   };
 
-  const sendFriendRequest = (user) => {
+  const sendFriendRequest = (invitedUser) => {
+    console.log('sending req');
     axios.post('/api/friends', {
-      invitedFriend: user.uid
+      invitedFriend: invitedUser.uid
     }).then(res => {
-      user.friend_b = true,
-      user.request_accepted = false
+      getAllFriends();
+      getAllRequests();
     });
   };
 
@@ -118,42 +135,20 @@ const AllUsers = (props) => {
                    > <Avatar size="2xl" name="Segun Adebayo" src="https://bit.ly/sage-adebayo" />{user.full_name}
                      
                    </Box>
-                   {/*<Box
-                       color="gray.500"
-                       fontWeight="semibold"
-                       letterSpacing="wide"
-                       fontSize="s"
-                       textTransform="uppercase"
-                       ml="2"
-                     >
-                      Num of Habits: {property.NumOfHabits}  
-                      
-                     </Box>
-                     <Box
-                       color="gray.500"
-                       fontWeight="semibold"
-                       letterSpacing="wide"
-                       fontSize="s"
-                       textTransform="uppercase"
-                       ml="2"
-                     >
-                      Avg % completed: {property.AvgCompleted}  
-                      
-                   </Box> */}
-       
                    
                    <br/>
 
-                  <Button colorScheme="teal" size="sm" visibility={user.friend_b} onClick={() => sendFriendRequest(user)}>
-                  Send Friend Request
-                  </Button>
-
-
-                   {user.friend_b & (!user.request_accepted & currentUser.uid == user.friend_b) ? 
+                  {!user.friend_b ? 
+                    <Button colorScheme="teal" size="sm" onClick={() => sendFriendRequest(user)}>
+                    Send Friend Request
+                    </Button>
+                  : ""}
+                  
+                   {(!user.request_accepted && currentUser.uid == user.friend_b) ? 
                    <Button colorScheme="teal" size="sm" onClick={() => acceptFriendRequest(user)}>
                      Accept Friend Request
                    </Button> : 
-                   <Button disabled={true} visibility={user.friend_b}>
+                   <Button disabled={true} visibility={(!user.request_accepted) && user.friend_b?.length > 0 ? "visible" : "hidden"}>
                    Friend Request Pending
                   </Button>
                   }
@@ -192,7 +187,7 @@ const AllUsers = (props) => {
             </Button>
           </HStack>
 
-          {searchResults ? 
+          {searchResults.length > 0 ? 
           <Heading size="md">Search Results</Heading>
           : ""}
 
@@ -202,22 +197,34 @@ const AllUsers = (props) => {
           
         </div>
         <Divider />
+        
+        <Accordion defaultIndex={1} allowMultiple>
+            <AccordionItem>
+              <AccordionButton>
+                <Heading size="md">Friend Requests ({friendRequests.length})</Heading>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel>
+                <SimpleGrid columns="3">
+                  {renderUsers(friendRequests)}
+                </SimpleGrid>
+              </AccordionPanel>
+            </AccordionItem>
 
-        <div style={{padding: '15px'}}>
-          <Heading size="md">Friend Requests</Heading>
-            <SimpleGrid columns="3">
-             {renderUsers(friendRequests)}
-            </SimpleGrid>
-        </div>
+            <AccordionItem>
+              <AccordionButton>
+                <Heading size="md">My Friends ({allUsers.length})</Heading>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel>
+                <SimpleGrid columns="3">
+                  {renderUsers(allUsers)}
+                </SimpleGrid>
+              </AccordionPanel>
+            </AccordionItem>
 
-        <Divider />
-
-        <div style={{padding: '15px'}}>
-          <Heading size="md">My Friends</Heading>
-            <SimpleGrid columns="3">
-             {renderUsers(allUsers)}
-            </SimpleGrid>
-        </div>
+        </Accordion>
+       
       </Flex>
         
        
