@@ -1,5 +1,5 @@
 SELECT h.*,
-CASE WHEN rank IS NOT NULL THEN true ELSE false END as complete,
+CASE WHEN rank IS NOT NULL AND hl.date_completed = now()::date THEN true ELSE false END as complete,
 CASE 
   WHEN 
     (hl.date_completed IS NOT NULL AND now()::date - hl.date_completed > h.reminder) 

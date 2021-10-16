@@ -28,6 +28,7 @@
     "@chakra-ui/react": "^1.6.8",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
+    "aws-sdk": "^2.1009.0",
     "axios": "^0.21.4",
     "bcrypt": "^5.0.1",
     "buffer": "^6.0.3",
@@ -44,12 +45,17 @@
     "pg": "^8.7.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
+    "react-aws-s3": "^1.5.0",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
+    "react-player": "^2.9.0",
     "react-router-dom": "^5.3.0",
+    "react-spinners": "^0.11.0",
     "react-video-recorder": "^3.19.1",
     "regenerator-runtime": "^0.13.9",
-    "styled-components": "^5.3.1"
+    "styled-components": "^5.3.1",
+    "util": "^0.12.4",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

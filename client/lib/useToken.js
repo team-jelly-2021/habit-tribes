@@ -1,24 +1,23 @@
-import * as React from 'react'
-import axios from 'axios'
-import { useAuth } from './AuthContext'
+import * as React from 'react';
+import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 export function useToken() {
-  const [token, setToken] = React.useState('')
+  const [token, setToken] = React.useState('');
   const { currentUser } = useAuth();
 
   React.useEffect(() => {
     getToken();
-  }, [currentUser])
-
+  }, [currentUser]);
 
   const getToken = async () => {
     const token = await currentUser.getIdToken();
-    setToken(token)
+    setToken(token);
     if (token) {
-        axios.interceptors.request.use(function (config) {
+      axios.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
         return config;
       });
     }
-  }
-} 
+  };
+}
