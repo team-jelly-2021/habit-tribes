@@ -11,8 +11,6 @@ CREATE TABLE public.users (
   OIDS=FALSE
 );
 
-
-
 CREATE TABLE public.habits (
 	"name" varchar NOT NULL,
 	CONSTRAINT "habits_pk" PRIMARY KEY ("name")
@@ -26,14 +24,23 @@ CREATE TABLE "public"."habit" (
     "id" int4 NOT NULL DEFAULT nextval('habit_id_seq'::regclass),
     "name" varchar NOT NULL,
     "user_id" int4 NOT NULL,
-    "created_at" date NOT NULL,
+    "created_at" date NOT NULL DEFAULT now(),
     "frequency" varchar,
     "reminder" int4,
     "private" bool NOT NULL DEFAULT false,
+    "next_reminder" date,
     PRIMARY KEY ("id")
 );
 
-
+DROP TABLE IF EXISTS "public"."habit_log";
+CREATE SEQUENCE IF NOT EXISTS habit_log_id_seq;
+CREATE TABLE "public"."habit_log" (
+    "id" int4 NOT NULL DEFAULT nextval('habit_log_id_seq'::regclass),
+    "habit_id" int4 NOT NULL,
+    "date_completed" date DEFAULT now(),
+    "metadata" json,
+    PRIMARY KEY ("id")
+);
 
 CREATE TABLE public.users_habits_join (
 	"_id" serial NOT NULL,
@@ -55,8 +62,6 @@ CREATE TABLE public.users_habits_join (
   OIDS=FALSE
 );
 
-
-
 CREATE TABLE public.friends (
 	"_id" serial NOT NULL,
 	"friend_a" varchar NOT NULL,
@@ -67,8 +72,6 @@ CREATE TABLE public.friends (
   OIDS=FALSE
 );
 
-
-
 CREATE TABLE public.user_habit_calendar (
 	"_id" serial NOT NULL,
 	"user_habits_join_id" bigint NOT NULL,
@@ -77,8 +80,6 @@ CREATE TABLE public.user_habit_calendar (
 ) WITH (
   OIDS=FALSE
 );
-
-
 
 CREATE TABLE public.videos (
 	"recorded_by_id" varchar NOT NULL,
@@ -98,7 +99,6 @@ CREATE TABLE public.today (
 ) WITH (
   OIDS=FALSE
 );
-
 
 ALTER TABLE public.users_habits_join ADD CONSTRAINT "users_habits_join_fk0" FOREIGN KEY ("users_id") REFERENCES "users"("email");
 ALTER TABLE public.users_habits_join ADD CONSTRAINT "users_habits_join_fk1" FOREIGN KEY ("habits_id") REFERENCES "habits"("name");
