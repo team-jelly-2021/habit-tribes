@@ -11,8 +11,6 @@ CREATE TABLE public.users (
   OIDS=FALSE
 );
 
-
-
 CREATE TABLE public.habits (
 	"name" varchar NOT NULL,
 	CONSTRAINT "habits_pk" PRIMARY KEY ("name")
@@ -55,8 +53,6 @@ CREATE TABLE public.users_habits_join (
   OIDS=FALSE
 );
 
-
-
 CREATE TABLE public.friends (
 	"_id" serial NOT NULL,
 	"friend_a" varchar NOT NULL,
@@ -67,8 +63,6 @@ CREATE TABLE public.friends (
   OIDS=FALSE
 );
 
-
-
 CREATE TABLE public.user_habit_calendar (
 	"_id" serial NOT NULL,
 	"user_habits_join_id" bigint NOT NULL,
@@ -77,8 +71,6 @@ CREATE TABLE public.user_habit_calendar (
 ) WITH (
   OIDS=FALSE
 );
-
-
 
 CREATE TABLE public.videos (
 	"recorded_by_id" varchar NOT NULL,
