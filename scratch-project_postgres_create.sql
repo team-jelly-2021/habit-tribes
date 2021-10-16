@@ -23,7 +23,7 @@ CREATE SEQUENCE IF NOT EXISTS habit_id_seq;
 CREATE TABLE "public"."habit" (
     "id" int4 NOT NULL DEFAULT nextval('habit_id_seq'::regclass),
     "name" varchar NOT NULL,
-    "user_id" int4 NOT NULL,
+    "user_id" varchar NOT NULL,
     "created_at" date NOT NULL DEFAULT now(),
     "frequency" varchar,
     "reminder" int4,
