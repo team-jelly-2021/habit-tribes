@@ -109,8 +109,8 @@ CREATE TABLE user_cache (
 ALTER TABLE public.users_habits_join ADD CONSTRAINT "users_habits_join_fk0" FOREIGN KEY ("users_id") REFERENCES "users"("email");
 ALTER TABLE public.users_habits_join ADD CONSTRAINT "users_habits_join_fk1" FOREIGN KEY ("habits_id") REFERENCES "habits"("name");
 
-ALTER TABLE public.friends ADD CONSTRAINT "friends_fk0" FOREIGN KEY ("friend_a") REFERENCES "users"("email");
-ALTER TABLE public.friends ADD CONSTRAINT "friends_fk1" FOREIGN KEY ("friend_b") REFERENCES "users"("email");
+ALTER TABLE public.friends ADD CONSTRAINT "friends_fk0" FOREIGN KEY ("friend_a") REFERENCES "user_cache"("uid");
+ALTER TABLE public.friends ADD CONSTRAINT "friends_fk1" FOREIGN KEY ("friend_b") REFERENCES "user_cache"("uid");
 
 ALTER TABLE public.user_habit_calendar ADD CONSTRAINT "user_habit_calendar_fk0" FOREIGN KEY ("user_habits_join_id") REFERENCES "users_habits_join"("_id");
 

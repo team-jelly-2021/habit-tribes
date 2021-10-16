@@ -324,11 +324,12 @@ userController.removeFriend = async (req, res, next) => {
 
 userController.showFriendRequests = async (req, res, next) => {
   const invitee = req.currentUser.uid;
-
+  console.log(invitee);
   const friendReqQry = `
       SELECT  f.friend_a,
+              f._id,
               a.full_name,
-              a.uid
+              a.uid,
               f.friend_b,
               b.full_name,
               b.uid,
@@ -338,7 +339,7 @@ userController.showFriendRequests = async (req, res, next) => {
       ON f.friend_a = a.uid
       INNER JOIN user_cache b
       ON f.friend_b = b.uid
-      WHERE f.friend_a = $1 OR f.friend_b = $1 AND f.request_accepted = FALSE`;
+      WHERE (f.friend_a = $1 OR f.friend_b = $1) AND f.request_accepted = FALSE`;
 
   try {
     const result = await db.query(friendReqQry, [invitee]);
@@ -355,8 +356,9 @@ userController.getAllFriends = async (req, res, next) => {
 
   const friendReqQry = `
       SELECT  f.friend_a,
+              f._id,
                   a.full_name,
-                  a.uid
+                  a.uid,
                   f.friend_b,
                   b.full_name,
                   b.uid,
@@ -366,7 +368,7 @@ userController.getAllFriends = async (req, res, next) => {
       ON f.friend_a = a.uid
       INNER JOIN user_cache b
       ON f.friend_b = b.uid
-      WHERE f.friend_a = $1 OR f.friend_b = $1 AND f.request_accepted = TRUE`;
+      WHERE (f.friend_a = $1 OR f.friend_b = $1) AND f.request_accepted = TRUE`;
 
   try {
     const result = await db.query(friendReqQry, [user]);
