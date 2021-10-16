@@ -15,11 +15,11 @@ router.get('/', userController.getAllUsers,(req, res) => {
 
 });  
 
-router.post('/allFriends', userController.getAllFriends, (req, res, next) => {
+router.get('/allFriends', userController.getAllFriends, (req, res, next) => {
   return res.json(res.locals.friends);
 });
 
-router.post('/requests', userController.showFriendRequests, (req, res, next) => {
+router.get('/requests', userController.showFriendRequests, (req, res, next) => {
   return res.json(res.locals.friendRequests);
 });
 
