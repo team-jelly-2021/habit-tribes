@@ -1,101 +1,85 @@
-import React from 'react';
+/* eslint-disable block-spacing */
+/* eslint-disable global-require */
+/* eslint-disable no-undef */
+/* eslint-disable no-shadow */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable no-multiple-empty-lines */
+import * as React from 'react';
+import {
+  Box,
+  Button,
+  Center,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+} from '@chakra-ui/react';
+import VideoRecorder from 'react-video-recorder';
 
-const Video = () => {
-  const constraintObj = {
-    audio: true,
-    video: {
-      facingMode: 'user',
-      width: { min: 640, ideal: 1280, max: 1920 },
-      height: { min: 480, ideal: 720, max: 1080 },
-    },
-  };
-  // width: 1280, height: 720  -- preference only
-  // facingMode: {exact: "user"}
-  // facingMode: "environment"
+window.Buffer = window.Buffer || require('buffer').Buffer;
 
-  // handle older browsers that might implement getUserMedia in some way
-  if (navigator.mediaDevices === undefined) {
-    navigator.mediaDevices = {};
-    navigator.mediaDevices.getUserMedia = function (constraintObj) {
-      const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-      if (!getUserMedia) {
-        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-      }
-      return new Promise((resolve, reject) => {
-        getUserMedia.call(navigator, constraintObj, resolve, reject);
-      });
+const Video = ({ isOpen = () => {}, onClose = () => {}, handleAddVideo = () => {} }) => {
+  const [blob, setBlob] = React.useState(null);
+
+  const handleRecordingComplete = (blob) => {
+    const blobObject = {
+      blob,
+      url: window.URL.createObjectURL(blob),
     };
-  } else {
-    navigator.mediaDevices.enumerateDevices()
-      .then((devices) => {
-        devices.forEach((device) => {
-          console.log(device.kind.toUpperCase(), device.label);
-          // , device.deviceId
-        });
-      })
-      .catch((err) => {
-        console.log(err.name, err.message);
-      });
-  }
-
-  navigator.mediaDevices.getUserMedia(constraintObj)
-    .then((mediaStreamObj) => {
-      // connect the media stream to the first video element
-      const video = document.querySelector('video');
-      if ('srcObject' in video) {
-        video.srcObject = mediaStreamObj;
-      } else {
-        // old version
-        video.src = window.URL.createObjectURL(mediaStreamObj);
-      }
-
-      video.onloadedmetadata = function (ev) {
-        // show in the video element what is being captured by the webcam
-        video.play();
-      };
-
-      // add listeners for saving video/audio
-      const start = document.getElementById('btnStart');
-      const stop = document.getElementById('btnStop');
-      const vidSave = document.getElementById('vid2');
-      const mediaRecorder = new MediaRecorder(mediaStreamObj);
-      let chunks = [];
-
-      start.addEventListener('click', (ev) => {
-        mediaRecorder.start();
-        console.log(mediaRecorder.state);
-      });
-      stop.addEventListener('click', (ev) => {
-        mediaRecorder.stop();
-        console.log(mediaRecorder.state);
-      });
-      mediaRecorder.ondataavailable = function (ev) {
-        chunks.push(ev.data);
-      };
-      mediaRecorder.onstop = (ev) => {
-        const blob = new Blob(chunks, { type: 'video/mp4;' });
-        chunks = [];
-        const videoURL = window.URL.createObjectURL(blob);
-        vidSave.src = videoURL;
-      };
-    })
-    .catch((err) => {
-      console.log(err.name, err.message);
-    });
+    setBlob(blobObject);
+  };
 
   return (
-    <div>
-      <p>
-        <button id="btnStart">START RECORDING</button>
-        <br />
-        <button id="btnStop">STOP RECORDING</button>
-      </p>
-
-      <video controls />
-
-      <video id="vid2" controls />
-    </div>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Add Habit</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Box m="10">
+            <Center>
+              <Box
+                bg="gray.200"
+                shadow="base"
+                borderRadius="2xl"
+                p={{
+                  base: '4',
+                  md: '8',
+                }}
+              >
+                <Box minWidth="460px" height="400" m={2}>
+                  <Center>
+                    <VideoRecorder
+                      constraints={{
+                        audio: true,
+                        video: true,
+                      }}
+                      timeLimit={30000}
+                      countdownTime={2000}
+                      isOnInitially
+                      onRecordingComplete={(blob) => handleRecordingComplete(blob)}
+                      showReplayControls
+                      replayVideoAutoplayAndLoopOff
+                    />
+                  </Center>
+                  <Center>
+                    <Button
+                      m={2}
+                      onClick={() => { handleAddVideo(blob); onClose(); }}
+                    >
+                      Add Video
+                    </Button>
+                  </Center>
+                </Box>
+              </Box>
+            </Center>
+          </Box>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 };
-
 export default Video;

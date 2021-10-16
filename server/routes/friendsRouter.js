@@ -15,22 +15,28 @@ router.get('/', userController.getAllUsers,(req, res) => {
 
 });  
 
-router.get('/', (req, res, next) => {
-  // first invoke controller to get list of all users (stretch: all friends), along with their stats
-  // return list
-
+router.get('/allFriends', userController.getAllFriends, (req, res, next) => {
+  return res.json(res.locals.friends);
 });
 
-router.post('/', (req, res, next) => {
+router.get('/requests', userController.showFriendRequests, (req, res, next) => {
+  return res.json(res.locals.friendRequests);
+});
+
+router.get('/search', userController.findUser, (req, res, next) => {
+  return res.json(res.locals.results);
+});
+
+router.post('/', userController.makeFriendRequest, (req, res, next) => {
   // first invoke controller to make friend request
   // return confirmation
-
+  return res.status(200).send('success');
 });
 
-router.put('/', (req, res, next) => {
+router.put('/', userController.acceptFriendRequest, (req, res, next) => {
   // first invoke controller to confirm friend request
   // return confirmation
-
+  return res.status(200).send('success');
 });
 
 module.exports = router;
