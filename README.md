@@ -9,6 +9,10 @@ Habit Tribes is a light weight, web based habit tracking application and social 
 #### npm i - installs dependencies
 #### npm dev - starts server in dev mode
 
+# Docker setup
+
+#### psql -U postgres -h 127.0.0.1 -d habittribes -f scratch-project_postgres_create.sql -a
+
 # Features
 
 # Technology used
