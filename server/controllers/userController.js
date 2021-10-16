@@ -324,11 +324,11 @@ userController.removeFriend = async (req, res, next) => {
 
 userController.showFriendRequests = async (req, res, next) => {
   const invitee = req.currentUser.uid;
-
+  console.log(invitee);
   const friendReqQry = `
       SELECT  f.friend_a,
               a.full_name,
-              a.uid
+              a.uid,
               f.friend_b,
               b.full_name,
               b.uid,
