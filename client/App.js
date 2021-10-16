@@ -10,31 +10,33 @@ import Video from './components/Video';
 import { AuthProvider } from "./lib/AuthContext";
 import PrivateRoute from './components/PrivateRoute'
 import TokenWrapper from './components/TokenWrapper'
+import SettingsDashboard from './components/SettingsDashboard';
 
 
 const App = () => {
 
 	return (
-		<AuthProvider>
-		 <TokenWrapper>
-			<ChakraProvider>
-				<Switch>
-					<Route exact path="/" component={HomePage} />
-					<Route path="/login" component={Login} />
-					<Route path="/register" component={Register} />
-					<PrivateRoute path="/habits" component={HabitDashboard} />
-					<PrivateRoute path="/friends" component={Friends} />
-					<PrivateRoute path="/video" component={Video} />
-					<Route path="/*">
-						<div>
-							<Center mt={20}>404 not found</Center>
-						</div>
-					</Route>
-				</Switch>
-			</ChakraProvider>
-			</TokenWrapper>
-		</AuthProvider>
-	);
+    <AuthProvider>
+      <TokenWrapper>
+        <ChakraProvider>
+          <Switch>
+            <Route exact path="/" component={HomePage} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+            <PrivateRoute path="/habits" component={HabitDashboard} />
+            <PrivateRoute path="/friends" component={Friends} />
+            <PrivateRoute path="/video" component={Video} />
+            <PrivateRoute path="/settings" component={SettingsDashboard} />
+            <Route path="/*">
+              <div>
+                <Center mt={20}>404 not found</Center>
+              </div>
+            </Route>
+          </Switch>
+        </ChakraProvider>
+      </TokenWrapper>
+    </AuthProvider>
+  );
 }
 
 export default App;

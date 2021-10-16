@@ -18,7 +18,7 @@ export const PageHeader = (props) => (
 		<Container maxW="7xl">
 		
 			<Stack direction="row" spacing="4">
-				<TabLink aria-current="page" href="#">
+				<TabLink  href="#">
 					Goals
 				</TabLink>
         <TabLink href="#">Motivation</TabLink>
