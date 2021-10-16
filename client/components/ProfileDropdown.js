@@ -20,12 +20,14 @@ const UserAvatar = () => {
 	// The name field needs to be added to the firebase user object on sign up
 	// Then that property needs to replace the Jim Carrey string
 	return (
-		<Avatar
-			size="sm"
-			src={currentUser?.photoURL}
-			name="Jim Carrey"
-		/>
-	)
+    <Avatar
+      src={
+        currentUser?.photoURL ||
+        'https://images.hindustantimes.com/img/2021/05/08/1600x900/Jim_carrey_1620469222065_1620469231087.jpg'
+      }
+      name={currentUser?.displayName || 'Jim Carrey'}
+    />
+  );
 };
 
 const ProfileMenuButton = (props) => {
@@ -64,6 +66,8 @@ export const ProfileDropdown = () => {
 			}
 		}
 	
+		const handleSettings = () => { history.push('/settings')}
+	
 	return (
 		<Menu>
 			<ProfileMenuButton />
@@ -83,7 +87,7 @@ export const ProfileDropdown = () => {
 					</Text>
 					</Box>
 				</HStack>
-				<MenuItem fontWeight="medium">Account Settings</MenuItem>
+				<MenuItem fontWeight="medium" onClick={handleSettings}>Account Settings</MenuItem>
 				<MenuItem fontWeight="medium" color={mode("red.500", "red.300")} onClick={handleLogout}>
 					Sign out
 			</MenuItem>

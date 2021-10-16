@@ -4,7 +4,6 @@ import { MobileHamburgerMenu } from "./MobileHamburgerMenu";
 import { Notification } from "./Notification";
 import { PageContent } from "./PageContent";
 import { PageHeader } from "./PageHeader";
-import { ChakraProvider} from "@chakra-ui/react";
 import { Box,Badge,Avatar,Button } from "@chakra-ui/react";
 import { NavMenu } from "./NavMenu";
 import { useMobileMenuState } from "./useMobileMenuState";
