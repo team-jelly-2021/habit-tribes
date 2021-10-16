@@ -1,19 +1,23 @@
-import React from 'react'
-import { Box, Button, Center, useColorMode } from '@chakra-ui/react';
-import VideoRecorder from 'react-video-recorder'
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable no-multiple-empty-lines */
+import React from 'react';
+import {
+  Box, Button, Center, useColorMode,
+} from '@chakra-ui/react';
+import VideoRecorder from 'react-video-recorder';
+
 
 window.Buffer = window.Buffer || require('buffer').Buffer;
 
 const Video = () => {
-
   // finshing adding logic too components for different color
-const { colorMode, toggleColorMode } = useColorMode();
-  
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Box m="10">
       <Center>
         <Box
-          bg={'gray.700'}
+          bg="gray.700"
           shadow="base"
           borderRadius="2xl"
           p={{
@@ -31,21 +35,19 @@ const { colorMode, toggleColorMode } = useColorMode();
                 }}
                 timeLimit={30000}
                 countdownTime={2000}
-                // dataAvailableTimeout={500}
-                // isFlipped
                 isOnInitially
                 // onError={function noRefCheck(){}}
                 onRecordingComplete={(blob) => {
-                  console.log(blob, 'video blob')
-                  console.log('Blob object url', window.URL.createObjectURL(blob))
+                  console.log(blob, 'video blob');
+                  console.log('Blob object url', window.URL.createObjectURL(blob));
                 }}
                 showReplayControls
                 replayVideoAutoplayAndLoopOff
               />
-            </Center> 
+            </Center>
             <Center>
-              <Button m={2} onClick={()=> { console.log('Invokes function to send blow to s3 bucket') }}>Add Video</Button>
-              </Center>
+              <Button m={2} onClick={() => { console.log('Invokes function to send blow to s3 bucket'); }}>Add Video</Button>
+            </Center>
           </Box>
         </Box>
       </Center>
