@@ -29,6 +29,7 @@ CREATE TABLE "public"."habit" (
     "reminder" int4,
     "private" bool NOT NULL DEFAULT false,
     "next_reminder" date,
+    "video_name" varchar,
     PRIMARY KEY ("id")
 );
 
